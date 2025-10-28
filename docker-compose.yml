@@ -9,8 +9,6 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    env_file:
-      - .env.production
     volumes:
       # Persist uploaded product images
       - ./uploads:/app/uploads
@@ -24,6 +22,22 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # Cloudflare Tunnel
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: bakeshop-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - bakeshop-network
+    depends_on:
+      bakeshop:
+        condition: service_healthy
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
