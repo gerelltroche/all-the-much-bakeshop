@@ -4,28 +4,6 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 export default function Home() {
-  const [animationStage, setAnimationStage] = useState(0);
-
-  useEffect(() => {
-    // Stage 0: Oven hops (0-2s)
-    // Stage 1: Oven door opens down (2-2.8s)
-    // Stage 2: Logo visible inside with perspective (2.8-3.3s)
-    // Stage 3: Logo slides out and grows (3.3-4.5s)
-    // Stage 4: Hold (4.5s+)
-
-    const timer1 = setTimeout(() => setAnimationStage(1), 2000);
-    const timer2 = setTimeout(() => setAnimationStage(2), 2800);
-    const timer3 = setTimeout(() => setAnimationStage(3), 3300);
-    const timer4 = setTimeout(() => setAnimationStage(4), 4500);
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-    };
-  }, []);
-
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-rose-50 to-amber-50 overflow-hidden flex items-center justify-center">
       {/* Background decorative elements */}
@@ -50,41 +28,29 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 text-center px-6">
-        {/* Animated Oven */}
-        <div className={`relative inline-block ${animationStage === 0 ? 'animate-hop' : ''}`}>
+        {/* Oven Animation Container */}
+        <div className="relative inline-block mb-12">
+          {/* Oven body (open, without door) */}
           <Image
-            src="/Oven.svg"
+            src="/Oven_Open.svg"
             alt="Oven"
-            width={320}
-            height={320}
+            width={400}
+            height={400}
             className="mx-auto"
             priority
           />
 
-          {/* Logo that slides out and grows */}
-          {animationStage >= 3 && (
-            <div
-              className={`absolute inset-0 flex items-center justify-center ${
-                animationStage === 3 ? 'animate-slide-out-grow' : ''
-              }`}
-              style={{
-                top: animationStage === 3 ? '20px' : '-40px',
-              }}
-            >
-              <div className={`relative drop-shadow-2xl ${animationStage === 3 ? 'w-32 h-32' : 'w-56 h-56'}`}
-                   style={{
-                     transition: animationStage === 3 ? 'width 1.2s ease-out, height 1.2s ease-out' : 'none'
-                   }}>
-                <Image
-                  src="/AllTheMuchBakeshopLogoTransparentBack.png"
-                  alt="All the Much Bake Shop Logo"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
-            </div>
-          )}
+          {/* Oven Door - positioned to align with oven */}
+          <div className="absolute inset-0 flex items-center justify-center" style={{ transform: 'translateX(-3.5px) translateY(12px)' }}>
+            <Image
+              src="/Oven_Door.svg"
+              alt="Oven Door"
+              width={400}
+              height={400}
+              className="mx-auto"
+              priority
+            />
+          </div>
         </div>
 
         {/* Coming Soon Text */}
@@ -97,35 +63,6 @@ export default function Home() {
           </p>
         </div>
       </div>
-
-      {/* Custom animations */}
-      <style jsx>{`
-        @keyframes hop {
-          0%, 100% { transform: translateY(0); }
-          25% { transform: translateY(-30px); }
-          50% { transform: translateY(0); }
-          75% { transform: translateY(-15px); }
-        }
-
-        @keyframes slideOutGrow {
-          0% {
-            transform: translateY(0) scale(0.8);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-60px) scale(1.4);
-            opacity: 1;
-          }
-        }
-
-        .animate-hop {
-          animation: hop 2s ease-in-out;
-        }
-
-        .animate-slide-out-grow {
-          animation: slideOutGrow 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-      `}</style>
     </div>
   );
 }
