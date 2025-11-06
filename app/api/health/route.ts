@@ -3,7 +3,7 @@
 
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export function GET(): NextResponse {
   // Perform basic health checks
   const health = {
     status: 'ok',
