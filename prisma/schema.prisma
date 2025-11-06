@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Drop {
+  id          String   @id @default(cuid())
+  name        String   // "Winter 2025"
+  slug        String   @unique // "winter-2025"
+  startDate   DateTime
+  cutoffDate  DateTime
+  isActive    Boolean  @default(true)
+
+  orders      Order[]
+  emails      Email[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  dropId          String
+  drop            Drop     @relation(fields: [dropId], references: [id])
+
+  // Form type & attribution
+  orderType       String   // "public" | "business" | "group"
+  attribution     String?  // For tracking which link/source they came from
+
+  // Customer info
+  name            String
+  email           String
+  phone           String
+  zipCode         String
+
+  // Business-specific (nullable)
+  businessName    String?
+  businessAddress String?
+
+  // Group-specific (nullable)
+  coordinatorName String?
+  groupMembers    Json?    // Array of {name, snowmanQty, gingerbreadQty, mittensQty}
+
+  // Cookie quantities (for non-group orders)
+  snowmanQty      Int      @default(0)
+  gingerbreadQty  Int      @default(0)
+  mittensQty      Int      @default(0)
+
+  // Calculated fields
+  totalCookies    Int
+  totalPrice      Decimal  @db.Decimal(10, 2)
+
+  // Fulfillment
+  fulfillmentType String   // "pickup" | "delivery"
+  requestedDate   DateTime?
+
+  // Status tracking
+  status          String   @default("pending")
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([dropId])
+  @@index([email])
+  @@index([attribution])
+}
+
+model Email {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+
+  // Which drop they signed up during (nullable)
+  dropId       String?
+  drop         Drop?    @relation(fields: [dropId], references: [id])
+
+  isSubscribed Boolean  @default(true)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([dropId])
+  @@index([isSubscribed])
+}

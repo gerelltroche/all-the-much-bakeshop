@@ -52,3 +52,5 @@ cloudflared.json
 
 # scripts output (if running setup scripts locally)
 /scripts/setup-pi.sh
+
+/app/generated/prisma

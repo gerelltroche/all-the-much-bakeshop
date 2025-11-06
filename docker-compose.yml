@@ -1,4 +1,25 @@
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: bakeshop-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bakeshop}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bakeshop_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-bakeshop}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bakeshop-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bakeshop}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Next.js Application
   bakeshop:
     build:
@@ -16,6 +37,9 @@ services:
       - ./logs:/app/logs
     networks:
       - bakeshop-network
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s
@@ -48,5 +72,6 @@ networks:
 
 # Persistent volumes
 volumes:
+  postgres_data:
   uploads:
   logs:
