@@ -18,7 +18,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Install all dependencies (including dev) for building
-RUN npm ci --ignore-scripts
+RUN npm ci
+
+# Accept DATABASE_URL as build arg for build-time prerendering
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 
 # Build Next.js app in standalone mode
 # This creates a minimal production server
@@ -42,6 +46,10 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy Prisma files (standalone mode doesn't include these automatically)
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
 # Create uploads directory for product images
 RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads

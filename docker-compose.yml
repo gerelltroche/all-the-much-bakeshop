@@ -25,11 +25,20 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: host
+      args:
+        # Use localhost during build (host network mode allows access to host's postgres on 5432)
+        - DATABASE_URL=postgresql://bakeshop:bakeshop_dev_password@localhost:5432/bakeshop?schema=public
     image: all-the-much-bakeshop:latest
     container_name: bakeshop-app
     restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      # Override DATABASE_URL at runtime to use postgres service name (not localhost)
+      - DATABASE_URL=postgresql://bakeshop:bakeshop_dev_password@postgres:5432/bakeshop?schema=public
     volumes:
       # Persist uploaded product images
       - ./uploads:/app/uploads
