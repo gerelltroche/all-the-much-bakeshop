@@ -15,7 +15,7 @@ export default function IngredientsPage() {
     },
     {
       name: "Apple Pie a la Mode",
-      ingredients: "Browned Butter (Sweet Cream, Natural Flavoring), Bread Flour (Enriched Flour [Wheat Flour, Malted Barley Flour, Niacin, Reduced Iron, Thiamin Mononitrate, Riboflavin, Folic Acid]), All-Purpose Flour (Unbleached Hard Red Wheat Flour, Malted Barley Flour), Granulated Sugar, Eggs, Apple Cider Syrup, Homemade Toffee (Butter, Sugar, Vanilla Extract), Light Brown Sugar (Sugar, Molasses), Freeze Dried Apple Powder (Apples), Powdered Sugar (Sugar, Cornstarch), Whole Milk (Milk, Vitamin D3), Cornstarch, Salt, Baking Soda, Cinnamon, Cream of Tartar, Vanilla Extract (Water, Alcohol, Vanilla Bean Extractives), Nutmeg."
+      ingredients: "Browned Butter (Sweet Cream, Natural Flavoring), Bread Flour (Enriched Flour [Wheat Flour, Malted Barley Flour, Niacin, Reduced Iron, Thiamin Mononitrate, Riboflavin, Folic Acid]), All-Purpose Flour (Unbleached Hard Red Wheat Flour, Malted Barley Flour), Granulated Sugar, Eggs, Apple Cider Syrup, Homemade Toffee (Butter, Sugar, Salt, Vanilla Extract), Light Brown Sugar (Sugar, Molasses), Freeze Dried Apple Powder (Apples), Powdered Sugar (Sugar, Cornstarch), Whole Milk (Milk, Vitamin D3), Cornstarch, Salt, Baking Soda, Cinnamon, Cream of Tartar, Vanilla Extract (Water, Alcohol, Vanilla Bean Extractives), Nutmeg."
     }
   ];
 
