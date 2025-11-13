@@ -25,6 +25,7 @@ export function PublicOrderForm({ dropId, attribution }: PublicOrderFormProps) {
     register,
     handleSubmit,
     watch,
+    setValue,
     trigger,
     formState: { errors },
   } = useForm<PublicOrderFormData>({
@@ -146,7 +147,7 @@ export function PublicOrderForm({ dropId, attribution }: PublicOrderFormProps) {
           )}
 
           {currentStep === 3 && (
-            <FulfillmentStep register={register} errors={errors} orderTotal={calculateTotal()} />
+            <FulfillmentStep register={register} errors={errors} orderTotal={calculateTotal()} watch={watch} setValue={setValue} />
           )}
 
           {currentStep === 4 && (

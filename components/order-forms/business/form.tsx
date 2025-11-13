@@ -26,6 +26,7 @@ export function BusinessOrderForm({ dropId, attribution }: BusinessOrderFormProp
     register,
     handleSubmit,
     watch,
+    setValue,
     trigger,
     formState: { errors },
   } = useForm<BusinessOrderFormData>({
@@ -158,7 +159,7 @@ export function BusinessOrderForm({ dropId, attribution }: BusinessOrderFormProp
           )}
 
           {currentStep === 4 && (
-            <FulfillmentStep register={register} errors={errors} orderTotal={calculateTotal()} />
+            <FulfillmentStep register={register} errors={errors} orderTotal={calculateTotal()} watch={watch} setValue={setValue} />
           )}
 
           {currentStep === 5 && (
