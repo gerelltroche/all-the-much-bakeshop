@@ -27,10 +27,18 @@ const businessInfoSchema = z.object({
     .min(1, 'Business name is required')
     .min(2, 'Business name must be at least 2 characters')
     .max(200, 'Business name must be less than 200 characters'),
-  businessAddress: z.string()
-    .min(1, 'Business address is required')
-    .min(10, 'Please enter a complete address')
-    .max(500, 'Address must be less than 500 characters'),
+  street: z.string()
+    .min(1, 'Street address is required')
+    .min(5, 'Please enter a complete street address')
+    .max(200, 'Street address must be less than 200 characters'),
+  city: z.string()
+    .min(1, 'City is required')
+    .min(2, 'City must be at least 2 characters')
+    .max(100, 'City must be less than 100 characters'),
+  state: z.string()
+    .min(1, 'State is required')
+    .length(2, 'Please enter a 2-letter state code (e.g., CA)')
+    .regex(/^[A-Z]{2}$/, 'State must be a valid 2-letter code in uppercase'),
 })
 
 // Cookie quantities

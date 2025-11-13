@@ -18,7 +18,9 @@ export const publicOrderSchema = baseSchema
 
 export const businessOrderSchema = baseSchema.extend({
   businessName: z.string().min(1, 'Business name is required'),
-  businessAddress: z.string().min(1, 'Business address is required')
+  street: z.string().min(1, 'Street address is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State is required').length(2, 'State must be 2 letters')
 })
 
 export const groupOrderSchema = z.object({

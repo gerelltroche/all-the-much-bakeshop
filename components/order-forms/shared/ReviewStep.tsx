@@ -20,7 +20,9 @@ interface PublicFormData extends BaseFormData {
 interface BusinessFormData extends BaseFormData {
   orderType: 'business'
   businessName: string
-  businessAddress: string
+  street: string
+  city: string
+  state: string
   snowmanQty: number
   gingerbreadQty: number
   mittensQty: number
@@ -67,7 +69,8 @@ export function ReviewStep({
           <div className="border-b pb-3">
             <h3 className="font-semibold text-gray-700 mb-2">Business Information</h3>
             <p className="text-sm text-gray-600">{formValues.businessName}</p>
-            <p className="text-sm text-gray-600">{formValues.businessAddress}</p>
+            <p className="text-sm text-gray-600">{formValues.street}</p>
+            <p className="text-sm text-gray-600">{formValues.city}, {formValues.state} {formValues.zipCode}</p>
           </div>
         )}
 

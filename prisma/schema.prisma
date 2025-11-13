@@ -42,11 +42,15 @@ model Order {
   name            String
   email           String
   phone           String
+
+  // Address (for delivery orders)
+  street          String?
+  city            String?
+  state           String?
   zipCode         String
 
   // Business-specific (nullable)
   businessName    String?
-  businessAddress String?
 
   // Group-specific (nullable)
   coordinatorName String?

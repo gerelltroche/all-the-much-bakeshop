@@ -38,7 +38,9 @@ export function BusinessOrderForm({ dropId, attribution }: BusinessOrderFormProp
       phone: '',
       zipCode: '',
       businessName: '',
-      businessAddress: '',
+      street: '',
+      city: '',
+      state: '',
       snowmanQty: 0,
       gingerbreadQty: 0,
       mittensQty: 0,
@@ -97,7 +99,7 @@ export function BusinessOrderForm({ dropId, attribution }: BusinessOrderFormProp
         fieldsToValidate = ['name', 'email', 'phone', 'zipCode']
         break
       case 2:
-        fieldsToValidate = ['businessName', 'businessAddress']
+        fieldsToValidate = ['businessName', 'street', 'city', 'state']
         break
       case 3:
         fieldsToValidate = ['snowmanQty', 'gingerbreadQty', 'mittensQty']
