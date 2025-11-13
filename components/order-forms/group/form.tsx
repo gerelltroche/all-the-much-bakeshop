@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { groupOrderSchema, GroupOrderFormData, GroupMember } from './schema'
@@ -21,6 +22,7 @@ interface GroupOrderFormProps {
 export function GroupOrderForm({ dropId, attribution }: GroupOrderFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
 
   const {
     register,
@@ -78,8 +80,7 @@ export function GroupOrderForm({ dropId, attribution }: GroupOrderFormProps) {
       const result = await submitGroupOrder(orderData)
 
       if (result.success) {
-        alert('Order submitted successfully!')
-        // TODO: Redirect to success page or reset form
+        router.push('/thank-you')
       } else {
         alert(result.error ?? 'Failed to submit order. Please try again.')
       }
