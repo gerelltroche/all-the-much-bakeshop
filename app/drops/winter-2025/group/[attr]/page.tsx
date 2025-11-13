@@ -5,7 +5,7 @@ export default async function GroupOrderPage({
   params
 }: {
   params: Promise<{ attr: string }>
-}): Promise<JSX.Element> {
+}) {
   const { attr } = await params
   const drop = await getActiveDrop('winter-2025')
 

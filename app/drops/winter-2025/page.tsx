@@ -1,7 +1,7 @@
 import { getActiveDrop } from '@/lib/drops'
 import OrderForm from '@/components/OrderForm'
 
-export default async function WinterDropPage(): Promise<JSX.Element> {
+export default async function WinterDropPage() {
   const drop = await getActiveDrop('winter-2025')
 
   if (drop === null) {

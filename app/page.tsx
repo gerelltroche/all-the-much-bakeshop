@@ -1,6 +1,6 @@
 'use client';
 
-export default function Home(): JSX.Element {
+export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-amber-100">
       <main className="container mx-auto px-4 py-8">
