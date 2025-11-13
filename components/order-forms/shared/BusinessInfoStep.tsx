@@ -1,14 +1,14 @@
 import { UseFormRegister, FieldErrors } from 'react-hook-form'
 import { ErrorMessage } from './ErrorMessage'
+import { BusinessOrderFormData } from '@/components/order-forms/business/schema'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function BusinessInfoStep({
   register,
   errors
 }: {
-  register: UseFormRegister<any>
-  errors: FieldErrors<any>
-}) {
+  register: UseFormRegister<BusinessOrderFormData>
+  errors: FieldErrors<BusinessOrderFormData>
+}): React.JSX.Element {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-amber-800 mb-4">Business Information</h2>
