@@ -190,7 +190,7 @@ export function GroupOrderForm({ dropId, attribution }: GroupOrderFormProps) {
           )}
 
           {currentStep === 4 && (
-            <FulfillmentStep register={register} errors={errors} />
+            <FulfillmentStep register={register} errors={errors} orderTotal={calculateTotal()} />
           )}
 
           {currentStep === 5 && (

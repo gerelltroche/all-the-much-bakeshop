@@ -146,7 +146,7 @@ export function PublicOrderForm({ dropId, attribution }: PublicOrderFormProps) {
           )}
 
           {currentStep === 3 && (
-            <FulfillmentStep register={register} errors={errors} />
+            <FulfillmentStep register={register} errors={errors} orderTotal={calculateTotal()} />
           )}
 
           {currentStep === 4 && (
