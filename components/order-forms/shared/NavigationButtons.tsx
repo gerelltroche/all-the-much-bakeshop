@@ -1,9 +1,10 @@
-export function NavigationButtons({ currentStep, totalSteps, isSubmitting, onPrevious, onNext }: {
+export function NavigationButtons({ currentStep, totalSteps, isSubmitting, onPrevious, onNext, onSubmit }: {
   currentStep: number
   totalSteps: number
   isSubmitting: boolean
   onPrevious: () => void
   onNext: () => void
+  onSubmit?: () => void
 }) {
   return (
     <div className="flex justify-between">
@@ -30,7 +31,8 @@ export function NavigationButtons({ currentStep, totalSteps, isSubmitting, onPre
         </button>
       ) : (
         <button
-          type="submit"
+          type="button"
+          onClick={onSubmit}
           disabled={isSubmitting}
           className={`px-8 py-3 rounded-lg font-semibold text-lg ${
             isSubmitting

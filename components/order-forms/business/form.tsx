@@ -174,6 +174,7 @@ export function BusinessOrderForm({ dropId, attribution }: BusinessOrderFormProp
           isSubmitting={isSubmitting}
           onPrevious={handlePrevious}
           onNext={() => { void handleNext() }}
+          onSubmit={() => { void handleSubmit(onSubmit)() }}
         />
       </form>
     </div>

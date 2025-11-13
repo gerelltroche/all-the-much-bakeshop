@@ -205,6 +205,7 @@ export function GroupOrderForm({ dropId, attribution }: GroupOrderFormProps) {
           isSubmitting={isSubmitting}
           onPrevious={handlePrevious}
           onNext={() => { void handleNext() }}
+          onSubmit={() => { void handleSubmit(onSubmit)() }}
         />
       </form>
     </div>

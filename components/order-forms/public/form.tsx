@@ -162,6 +162,7 @@ export function PublicOrderForm({ dropId, attribution }: PublicOrderFormProps) {
           isSubmitting={isSubmitting}
           onPrevious={handlePrevious}
           onNext={() => { void handleNext() }}
+          onSubmit={() => { void handleSubmit(onSubmit)() }}
         />
       </form>
     </div>
