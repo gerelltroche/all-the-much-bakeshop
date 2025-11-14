@@ -5,7 +5,7 @@ export default function Home() {
     <div className="min-h-screen">
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-amber-800 mb-4">All the Much Bakeshop</h1>
+          <h1 className="text-4xl font-bold text-amber-800 mb-4">All the Much Bake Shop</h1>
           <p className="text-lg text-amber-600">Delicious baked goods made with love</p>
           <div className="mt-6">
             <a
