@@ -19,9 +19,8 @@ const tangerine = Tangerine({
 });
 
 
-// TODO: Update these image paths when you have your own images
-const twitterImagePath = "/og-image.jpg";
-const openGraphImagePath = "/og-image.jpg";
+const twitterImagePath = "/AllTheMuchBakeshopLogoTransparentBack.png";
+const openGraphImagePath = "/AllTheMuchBakeshopLogoTransparentBack.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://allthemuchbakeshop.com"),
