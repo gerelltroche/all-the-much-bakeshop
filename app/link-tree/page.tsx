@@ -1,4 +1,15 @@
 import type { Metadata } from 'next';
+import { Gabriela, Tangerine } from 'next/font/google';
+
+const gabriela = Gabriela({
+  weight: '400',
+  subsets: ['latin']
+});
+
+const tangerine = Tangerine({
+  weight: '700',
+  subsets: ['latin']
+});
 
 export const metadata: Metadata = {
   title: 'Links - All the Much Bake Shop',
@@ -39,11 +50,11 @@ export default function LinkTreePage() {
               className="w-full h-full object-cover"
             />
           </div>
-          <h1 className="text-3xl font-bold text-amber-900 mb-2">
+          <h1 className={`text-5xl font-bold text-amber-900 mb-2 ${tangerine.className}`}>
             All the Much Bake Shop
           </h1>
-          <p className="text-amber-700">
-            Handcrafted treats made with love
+          <p className={`text-amber-700 ${gabriela.className}`}>
+            handcrafted treats made with love 💕
           </p>
         </div>
 
@@ -119,12 +130,6 @@ export default function LinkTreePage() {
               </svg>
             </div>
           </a>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-12 text-center text-sm text-amber-700">
-          <p>All the Much Bake Shop</p>
-          <p className="mt-1">Made with love 💕</p>
         </div>
       </div>
     </div>

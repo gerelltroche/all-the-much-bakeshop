@@ -44,9 +44,6 @@ export default async function GroupOrderPage({
         <p className="text-gray-600">
           Order by {drop.cutoffDate.toLocaleDateString()}
         </p>
-        {attr !== '' && (
-          <p className="text-xs text-gray-400 mt-1">Attribution: {attr}</p>
-        )}
       </div>
 
       <OrderForm
