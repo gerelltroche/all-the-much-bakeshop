@@ -22,7 +22,8 @@ h1 {
   font-family: var(--font-tangerine);
   font-size: 5rem;
   font-weight: 700;
-  margin-bottom: -0.5rem;
+  margin-bottom: 0.5rem;
+  margin-right: 16px;
 }
 
 input,
