@@ -25,7 +25,7 @@ export async function submitGroupOrder(data: GroupOrderFormData & { dropId: stri
         phone: validatedData.phone,
         zipCode: validatedData.zipCode,
         coordinatorName: validatedData.coordinatorName,
-        groupMembers: validatedData.groupMembers as unknown as Prisma.JsonArray, // Store as JSON
+        groupMembers: validatedData.groupMembers as Prisma.InputJsonValue, // Store as JSON
         snowmanQty,
         gingerbreadQty,
         mittensQty,
