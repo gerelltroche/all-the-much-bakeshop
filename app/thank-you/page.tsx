@@ -1,9 +1,10 @@
 import Link from 'next/link'
+import { EmailSignupForm } from '@/components/EmailSignupForm'
 
 export default function ThankYouPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
+      <div className="max-w-2xl w-full space-y-6">
         <div className="bg-white rounded-lg shadow-xl p-8 md:p-12 text-center">
           <div className="mb-6">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -58,6 +59,8 @@ export default function ThankYouPage() {
             </Link>
           </div>
         </div>
+
+        <EmailSignupForm />
       </div>
     </div>
   )

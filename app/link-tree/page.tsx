@@ -58,6 +58,29 @@ export default function LinkTreePage() {
           </p>
         </div>
 
+        {/* Coming Soon Banner */}
+        <a
+          href="/signup"
+          className="block mb-6 bg-gradient-to-r from-rose-100 via-pink-100 to-rose-100 rounded-2xl p-6 shadow-md border-2 border-rose-300 relative overflow-hidden hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+        >
+          {/* Coming Soon Ribbon */}
+          <div className="absolute top-4 -left-10 bg-rose-500 text-white pl-8 pr-12 py-1 -rotate-45 shadow-lg">
+            <span className="text-xs font-bold">COMING SOON</span>
+          </div>
+
+          <div className="text-center">
+            <h2 className={`text-4xl font-bold text-rose-900 mb-1 ${tangerine.className}`}>
+              2025-2026 Winter Drops
+            </h2>
+            <p className={`text-rose-800 text-sm mb-4 ${gabriela.className}`}>
+              Stay tuned for our next delicious cookie drop!
+            </p>
+            <div className="inline-block bg-rose-500 text-white font-semibold py-2 px-6 rounded-full shadow-md">
+              Notify Me 🍪
+            </div>
+          </div>
+        </a>
+
         {/* Links */}
         <div className="space-y-4">
           {/* Instagram */}

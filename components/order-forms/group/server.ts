@@ -3,6 +3,7 @@
 import { Prisma } from '@prisma/client'
 import { groupOrderSchema, GroupOrderFormData } from './schema'
 import { prisma } from '@/lib/prisma'
+import { sendOrderConfirmationEmail } from '@/lib/email'
 
 export async function submitGroupOrder(data: GroupOrderFormData & { dropId: string; totalCookies: number; totalPrice: number }) {
   try {
@@ -35,6 +36,25 @@ export async function submitGroupOrder(data: GroupOrderFormData & { dropId: stri
         requestedDate: new Date(validatedData.requestedDate),
         status: 'pending',
       },
+    })
+
+    // Send order confirmation email asynchronously
+    sendOrderConfirmationEmail(validatedData.email, {
+      orderNumber: order.orderNumber,
+      customerName: validatedData.name,
+      cookies: [
+        { name: 'Snowman', quantity: snowmanQty, price: 4 },
+        { name: 'Gingerbread', quantity: gingerbreadQty, price: 4 },
+        { name: 'Mittens', quantity: mittensQty, price: 4 },
+      ].filter(cookie => cookie.quantity > 0),
+      total: data.totalPrice,
+      fulfillmentType: validatedData.fulfillmentType,
+      fulfillmentDetails: validatedData.fulfillmentType === 'pickup'
+        ? `Group order coordinated by ${validatedData.coordinatorName}\nPickup location details will be sent closer to your requested date.`
+        : `Group order coordinated by ${validatedData.coordinatorName}\nDelivery details will be sent closer to your requested date.`,
+      fulfillmentDate: new Date(validatedData.requestedDate),
+    }).catch((error) => {
+      console.error('Failed to send order confirmation email:', error)
     })
 
     return { success: true, orderId: order.id }

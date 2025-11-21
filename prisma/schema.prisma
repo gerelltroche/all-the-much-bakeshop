@@ -31,6 +31,7 @@ model Drop {
 
 model Order {
   id              String   @id @default(cuid())
+  orderNumber     Int      @unique @default(autoincrement())
   dropId          String
   drop            Drop     @relation(fields: [dropId], references: [id])
 
