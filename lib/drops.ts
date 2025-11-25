@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import type { Drop } from '@prisma/client'
+import type { Drop } from '@/lib/generated/prisma/client'
 
 export async function getActiveDrop(slug: string): Promise<(Drop & { isActive: boolean }) | null> {
   const drop = await prisma.drop.findUnique({

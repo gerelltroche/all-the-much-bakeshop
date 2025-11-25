@@ -8,7 +8,7 @@ const gabriela = Gabriela({
 });
 
 const dynaPuff = DynaPuff({
-  weight: '500',
+  weight: '400',
   subsets: ['latin']
 });
 
@@ -45,11 +45,11 @@ export default function SignupPage() {
       <div className="max-w-2xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className={`text-6xl font-bold text-amber-900 mb-3 ${dynaPuff.className}`}>
-            Don't Miss Out!
+          <h1 className={`text-6xl! font-bold text-amber-900 mb-5! mt-4 ${dynaPuff.className}`}>
+            Don't Miss <p>Out!</p>
           </h1>
           <p className={`text-lg text-amber-800 max-w-md mx-auto ${gabriela.className}`}>
-            Be the first to know when orders open for our 2025-2026 Winter Drop
+            Be the first to know when orders open for our 2025-2026 Winter Drops
           </p>
         </div>
 

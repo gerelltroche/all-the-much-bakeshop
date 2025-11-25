@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Gabriela, Tangerine } from 'next/font/google';
-import { DropCarousel } from './DropCarousel';
+import { DropCarousel, Drop } from './DropCarousel';
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
 
 const gabriela = Gabriela({
   weight: '400',
@@ -18,30 +20,30 @@ export const metadata: Metadata = {
 };
 
 // Placeholder images - replace with actual drop images
-const drops = [
+const drops: Drop[] = [
   {
     id: 'candy-cane-lane',
     name: 'Candy Cane Lane',
     emoji: '🍭',
-    href: '/drops/winter-2025/candy-cane-lane',
+    href: '/drops/candy-cane-lane',
     borderColor: 'border-rose-200 hover:border-rose-300',
     gradient: 'from-red-400 to-green-400',
-    images: ['/Katie-pfp.jpg', '/Katie-pfp.jpg', '/Katie-pfp.jpg'],
+    images: ['/products/candy_cane_lane.jpg', '/Katie-pfp.jpg', '/Katie-pfp.jpg'],
     flavor: 'Triple Chocolate Peppermint Bark',
-    orderBy: 'December 15, 2025',
+    dropOpens: 'December 15, 2025',
     pickupDate: 'December 20-22, 2025',
     comingSoon: false,
   },
   {
-    id: 'catch-me-if-you-can',
-    name: 'Catch Me If You Can',
+    id: 'cant-catch-me',
+    name: "Can't Catch Me",
     emoji: '🧑‍🍳',
-    href: '/drops/winter-2025/catch-me-if-you-can',
+    href: '/drops/cant-catch-me',
     borderColor: 'border-amber-200 hover:border-amber-300',
     gradient: 'from-amber-600 to-amber-400',
-    images: ['/Katie-pfp.jpg', '/Katie-pfp.jpg'],
+    images: ['/products/catch_me_if_you_can.jpg', '/Katie-pfp.jpg'],
     flavor: 'Gingerbread',
-    orderBy: 'January 5, 2026',
+    dropOpens: 'January 5, 2026',
     pickupDate: 'January 10-12, 2026',
     comingSoon: false,
   },
@@ -49,12 +51,12 @@ const drops = [
     id: 'sweater-weather',
     name: 'Sweater Weather',
     emoji: '🥧',
-    href: '/drops/winter-2025/sweater-weather',
+    href: '/drops/sweater-weather',
     borderColor: 'border-rose-200 hover:border-rose-300',
     gradient: 'from-rose-400 to-amber-400',
-    images: ['/Katie-pfp.jpg', '/Katie-pfp.jpg', '/Katie-pfp.jpg'],
-    flavor: 'Apple Pie Spice',
-    orderBy: 'January 20, 2026',
+    images: ['/products/sweater_weather.jpg', '/Katie-pfp.jpg', '/Katie-pfp.jpg'],
+    flavor: 'Apple Pie a La Mode',
+    dropOpens: 'January 20, 2026',
     pickupDate: 'January 25-27, 2026',
     comingSoon: false,
   },
@@ -63,17 +65,27 @@ const drops = [
     name: 'Superbowl Drop',
     emoji: '🏈',
     href: '#',
-    borderColor: 'border-blue-300',
+    borderColor: 'border-rose-200',
     gradient: 'from-blue-500 to-red-500',
-    images: ['/Katie-pfp.jpg'],
+    images: ['/products/candy_cane_lane.jpg'],
     flavor: 'TBA',
-    orderBy: 'TBA',
+    dropOpens: 'TBA',
     pickupDate: 'TBA',
     comingSoon: true,
   },
 ];
 
-export default function WinterDropsPage() {
+export default async function WinterDropsPage() {
+  // Fetch the currently active drop from the database
+  const now = new Date();
+  const activeDrop = await prisma.drop.findFirst({
+    where: {
+      isActive: true,
+      dropOpens: { lte: now },
+      cutoffDate: { gte: now }
+    }
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-amber-50 py-12 px-4 relative overflow-hidden">
       {/* Background decorative polka dots */}
@@ -131,6 +143,16 @@ export default function WinterDropsPage() {
           </a>
         </div>
       </div>
+
+      {/* Floating "Shop the Open Drop" button - Mobile only */}
+      {activeDrop && (
+        <Link
+          href={`/drops/${activeDrop.slug}`}
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 md:hidden bg-gradient-to-r from-rose-500 to-amber-500 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-bold text-lg z-50 ${gabriela.className}`}
+        >
+          Shop the Open Drop!
+        </Link>
+      )}
     </div>
   );
 }

@@ -54,3 +54,5 @@ cloudflared.json
 /scripts/setup-pi.sh
 
 /app/generated/prisma
+
+/lib/generated/prisma

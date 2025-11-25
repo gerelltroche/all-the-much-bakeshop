@@ -1,7 +1,7 @@
 services:
   # PostgreSQL Database
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     container_name: bakeshop-postgres
     restart: unless-stopped
     ports:
@@ -28,7 +28,7 @@ services:
       network: host
       args:
         # Use localhost during build (host network mode allows access to host's postgres on 5432)
-        - DATABASE_URL=postgresql://bakeshop:bakeshop_dev_password@localhost:5432/bakeshop?schema=public
+        - DATABASE_URL=postgresql://bakeshop:bakeshop_dev_password@localhost:5432/bakeshop
     image: all-the-much-bakeshop:latest
     container_name: bakeshop-app
     restart: unless-stopped
@@ -38,7 +38,7 @@ services:
       - .env
     environment:
       # Override DATABASE_URL at runtime to use postgres service name (not localhost)
-      - DATABASE_URL=postgresql://bakeshop:bakeshop_dev_password@postgres:5432/bakeshop?schema=public
+      - DATABASE_URL=postgresql://bakeshop:bakeshop_dev_password@postgres:5432/bakeshop
     volumes:
       # Persist uploaded product images
       - ./uploads:/app/uploads

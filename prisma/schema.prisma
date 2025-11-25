@@ -5,73 +5,136 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-model Drop {
-  id          String   @id @default(cuid())
-  name        String   // "Winter 2025"
-  slug        String   @unique // "winter-2025"
-  startDate   DateTime
-  cutoffDate  DateTime
-  isActive    Boolean  @default(true)
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  uom         String
+  sku         String   @unique
+  photos      String[]
 
-  orders      Order[]
-  emails      Email[]
+  orderItems  OrderItem[]
+  dropProducts DropProduct[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
+model Drop {
+  id          String   @id @default(cuid())
+  name        String   
+  slug        String   @unique
+  dropOpens     DateTime
+  pickupDate  DateTime
+  deliveryDates DateTime[]
+  pickupLocation String
+  cutoffDate  DateTime
+  isActive    Boolean  @default(true)
+  maxCookies  Int
+  currentCookies Int   @default(0)
+
+  orders      Order[]
+  emails      Email[]
+  dropProducts DropProduct[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([cutoffDate])
+}
+
+model DropProduct {
+  dropId      String
+  drop        Drop     @relation(fields: [dropId], references: [id], onDelete: Cascade)
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  isActive    Boolean  @default(true)
+  maxQuantity Int?     // Max quantity available for this product in this drop (null = unlimited)
+  displayOrder Int?    // For ordering products in drop display
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@id([dropId, productId])
+  @@index([dropId])
+  @@index([productId])
+}
+
+enum fulfillmentType {
+  pickup
+  delivery
+}
+
+enum OrderType {
+  individual
+  business
+  group
+}
+
+enum Status {
+  pending   // default
+  rejected  // rejected by admin
+  confirmed // accepted
+  paid      // accepted and paid
+  fulfilled // completed
+  cancelled // cancelled by user or admin
+  refunded  // refunded to user
+}
+
+model Customer {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  email        String   @unique
+  phone        String
+  street       String?
+  city         String?
+  state        String?
+  zipCode      String
+  businessName String?
+  isBusiness   Boolean  @default(false)
+
+  orders       Order[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+}
+
 model Order {
-  id              String   @id @default(cuid())
-  orderNumber     Int      @unique @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   dropId          String
   drop            Drop     @relation(fields: [dropId], references: [id])
+  orderType       OrderType
+  attribution     String?
 
-  // Form type & attribution
-  orderType       String   // "public" | "business" | "group"
-  attribution     String?  // For tracking which link/source they came from
+  customerId String?  @db.Uuid
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  email      String   // Required for all orders (including guest orders)
 
-  // Customer info
-  name            String
-  email           String
-  phone           String
+  // Delivery address (for delivery orders)
+  deliveryStreet String?
+  deliveryCity   String?
+  deliveryState  String?
+  deliveryZip    String?
 
-  // Address (for delivery orders)
-  street          String?
-  city            String?
-  state           String?
-  zipCode         String
-
-  // Business-specific (nullable)
-  businessName    String?
-
-  // Group-specific (nullable)
-  coordinatorName String?
-  groupMembers    Json?    // Array of {name, snowmanQty, gingerbreadQty, mittensQty}
-
-  // Cookie quantities (for non-group orders)
-  snowmanQty      Int      @default(0)
-  gingerbreadQty  Int      @default(0)
-  mittensQty      Int      @default(0)
-
-  // Calculated fields
-  totalCookies    Int
-  totalPrice      Decimal  @db.Decimal(10, 2)
-
-  // Fulfillment
-  fulfillmentType String   // "pickup" | "delivery"
+  orderItems   OrderItem[]
+  payments     Payment[]
+  totalAmount  Decimal  @db.Decimal(10, 2)
+  fulfillmentType fulfillmentType
   requestedDate   DateTime?
-
-  // Status tracking
-  status          String   @default("pending")
+  status          Status   @default(pending)
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -79,6 +142,68 @@ model Order {
   @@index([dropId])
   @@index([email])
   @@index([attribution])
+  @@index([customerId])
+  @@index([status])
+}
+
+model OrderItem {
+  id           Int     @id @default(autoincrement())
+  orderId      Int
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    Int
+  product      Product @relation(fields: [productId], references: [id])
+  quantity     Int
+  priceAtOrder Decimal @db.Decimal(10, 2)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+enum PaymentStatus {
+  pending
+  processing
+  succeeded
+  failed
+  cancelled
+  refunded
+}
+
+enum PaymentMethod {
+  card
+  cash
+  check
+  venmo
+  other
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  orderId         Int
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  amount          Decimal       @db.Decimal(10, 2)
+  status          PaymentStatus @default(pending)
+  paymentMethod   PaymentMethod
+
+  // Payment processor details (Stripe, etc.)
+  paymentIntentId String?       @unique
+  transactionId   String?
+
+  // Refund tracking
+  refundedAmount  Decimal?      @db.Decimal(10, 2)
+  refundedAt      DateTime?
+
+  metadata        Json?         // For additional payment processor data
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([orderId])
+  @@index([paymentIntentId])
+  @@index([status])
 }
 
 model Email {
