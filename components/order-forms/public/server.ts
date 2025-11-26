@@ -2,7 +2,7 @@
 
 import { publicOrderSchema, PublicOrderFormData } from './schema'
 import { prisma } from '@/lib/prisma'
-import { sendOrderConfirmationEmail } from '@/lib/email'
+import { sendOrderConfirmationEmail, sendKatieOrderNotification } from '@/lib/email'
 
 interface CookieProduct {
   id: number;
@@ -83,22 +83,42 @@ export async function submitPublicOrder(data: PublicOrderFormData & { dropId: st
     })
 
     // Send order confirmation email asynchronously
+    const cookies = [
+      { name: 'Snowman', quantity: validatedData.snowmanQty, price: 4 },
+      { name: 'Gingerbread', quantity: validatedData.gingerbreadQty, price: 4 },
+      { name: 'Mittens', quantity: validatedData.mittensQty, price: 4 },
+    ].filter(cookie => cookie.quantity > 0)
+
+    const fulfillmentDetails = validatedData.fulfillmentType === 'pickup'
+      ? 'Pickup location details will be sent closer to your requested date.'
+      : 'Delivery details will be sent closer to your requested date.'
+
     sendOrderConfirmationEmail(validatedData.email, {
       orderNumber: order.id,
       customerName: validatedData.name,
-      cookies: [
-        { name: 'Snowman', quantity: validatedData.snowmanQty, price: 4 },
-        { name: 'Gingerbread', quantity: validatedData.gingerbreadQty, price: 4 },
-        { name: 'Mittens', quantity: validatedData.mittensQty, price: 4 },
-      ].filter(cookie => cookie.quantity > 0),
+      cookies,
       total: data.totalPrice,
       fulfillmentType: validatedData.fulfillmentType,
-      fulfillmentDetails: validatedData.fulfillmentType === 'pickup'
-        ? 'Pickup location details will be sent closer to your requested date.'
-        : 'Delivery details will be sent closer to your requested date.',
+      fulfillmentDetails,
       fulfillmentDate: new Date(validatedData.requestedDate),
     }).catch((error) => {
       console.error('Failed to send order confirmation email:', error)
+    })
+
+    // Send Katie a notification
+    sendKatieOrderNotification({
+      orderNumber: order.id,
+      customerName: validatedData.name,
+      customerEmail: validatedData.email,
+      customerPhone: validatedData.phone,
+      orderType: 'individual',
+      cookies,
+      total: data.totalPrice,
+      fulfillmentType: validatedData.fulfillmentType,
+      fulfillmentDetails,
+      fulfillmentDate: new Date(validatedData.requestedDate),
+    }).catch((error) => {
+      console.error('Failed to send Katie order notification:', error)
     })
 
     return { success: true, orderId: order.id }

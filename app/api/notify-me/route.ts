@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
+import { sendWelcomeEmail } from '@/lib/email'
 
 const notifySchema = z.object({
   email: z.email(),
@@ -20,6 +21,11 @@ export async function POST(request: NextRequest) {
           dropId,
           isSubscribed: true,
         },
+      })
+
+      // Send welcome email (don't await to avoid blocking the response)
+      sendWelcomeEmail(email).catch((err) => {
+        console.error('Failed to send welcome email:', err)
       })
 
       return NextResponse.json({

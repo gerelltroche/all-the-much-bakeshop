@@ -2,222 +2,406 @@ import {
   Body,
   Container,
   Head,
+  Heading,
+  Hr,
   Html,
+  Img,
+  Link,
   Preview,
+  Row,
+  Column,
   Section,
   Text,
-  Hr,
 } from '@react-email/components';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
 
 interface OrderConfirmationEmailProps {
-  orderNumber: number;
-  customerName: string;
-  cookies: Array<{ name: string; quantity: number; price: number }>;
-  total: number;
-  fulfillmentType: 'pickup' | 'delivery';
-  fulfillmentDetails: string;
-  fulfillmentDate: Date;
+  orderNumber?: number;
+  customerName?: string;
+  cookies?: Array<{ name: string; quantity: number; price: number }>;
+  total?: number;
+  fulfillmentType?: 'pickup' | 'delivery';
+  fulfillmentDetails?: string;
+  fulfillmentDate?: Date;
 }
 
+// Default props for email preview
+const defaultProps: Required<OrderConfirmationEmailProps> = {
+  orderNumber: 1234,
+  customerName: 'Cookie Lover',
+  cookies: [
+    { name: 'Triple Chocolate Peppermint Bark (Dozen)', quantity: 1, price: 36 },
+    { name: 'Triple Chocolate Peppermint Bark (Half Dozen)', quantity: 2, price: 20 },
+  ],
+  total: 76,
+  fulfillmentType: 'pickup',
+  fulfillmentDetails: 'Downtown Farmers Market, 123 Main St',
+  fulfillmentDate: new Date('2025-12-21'),
+};
+
 export function OrderConfirmationEmail({
-  orderNumber,
-  customerName,
-  cookies,
-  total,
-  fulfillmentType,
-  fulfillmentDetails,
-  fulfillmentDate,
+  orderNumber = defaultProps.orderNumber,
+  customerName = defaultProps.customerName,
+  cookies = defaultProps.cookies,
+  total = defaultProps.total,
+  fulfillmentType = defaultProps.fulfillmentType,
+  fulfillmentDetails = defaultProps.fulfillmentDetails,
+  fulfillmentDate = defaultProps.fulfillmentDate,
 }: OrderConfirmationEmailProps) {
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
+  const previewText = `Order #${orderNumber} confirmed! Your cookies are on the way.`;
+
+  const formattedDate = new Date(fulfillmentDate).toLocaleDateString('en-US', {
     weekday: 'long',
-    year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).format(fulfillmentDate);
+    year: 'numeric',
+  });
 
   return (
     <Html>
       <Head />
-      <Preview>Order Confirmation - {orderNumber.toString()}</Preview>
-      <Body style={body}>
+      <Preview>{previewText}</Preview>
+      <Body style={main}>
         <Container style={container}>
-          <Header />
-          <Section style={content}>
-            <Text style={heading}>Thank You for Your Order! 🍪</Text>
-            <Text style={paragraph}>Hi {customerName},</Text>
+          <Section style={logoSection}>
+            <Img
+              src="https://allthemuchbakeshop.com/AllTheMuchBakeshopLogoTransparentBack.png"
+              width="220"
+              height="220"
+              alt="All the Much Bake Shop"
+              style={logoImage}
+            />
+          </Section>
+
+          <Section style={contentSection}>
+            <Heading style={heading}>
+              Order Confirmed!
+            </Heading>
+
             <Text style={paragraph}>
-              Your order has been confirmed! We can't wait to bake these
-              delicious cookies for you.
+              Hey {customerName}! Thanks so much for your order. I'm excited to
+              bake these fresh for you!
             </Text>
 
-            <Section style={orderBox}>
-              <Text style={orderBoxTitle}>Order #{orderNumber.toString()}</Text>
+            {/* Order Number Badge */}
+            <Section style={orderBadge}>
+              <Text style={orderBadgeLabel}>Order Number</Text>
+              <Text style={orderBadgeNumber}>#{orderNumber}</Text>
+            </Section>
 
-              <Hr style={hr} />
-
+            {/* Order Items */}
+            <Section style={orderSection}>
+              <Text style={sectionTitle}>Your Order</Text>
               {cookies.map((cookie, index) => (
-                <Section key={index} style={cookieRow}>
-                  <Text style={cookieName}>
-                    {cookie.quantity}x {cookie.name}
-                  </Text>
-                  <Text style={cookiePrice}>
-                    ${(cookie.quantity * cookie.price).toFixed(2)}
-                  </Text>
-                </Section>
+                <Row key={index} style={itemRow}>
+                  <Column style={itemNameCol}>
+                    <Text style={itemName}>
+                      {cookie.quantity}× {cookie.name}
+                    </Text>
+                  </Column>
+                  <Column style={itemPriceCol}>
+                    <Text style={itemPrice}>
+                      ${(cookie.price * cookie.quantity).toFixed(2)}
+                    </Text>
+                  </Column>
+                </Row>
               ))}
-
-              <Hr style={hr} />
-
-              <Section style={totalRow}>
-                <Text style={totalLabel}>Total</Text>
-                <Text style={totalAmount}>${total.toFixed(2)}</Text>
-              </Section>
+              <Hr style={divider} />
+              <Row style={itemRow}>
+                <Column style={itemNameCol}>
+                  <Text style={totalLabel}>Total</Text>
+                </Column>
+                <Column style={itemPriceCol}>
+                  <Text style={totalPrice}>${total.toFixed(2)}</Text>
+                </Column>
+              </Row>
             </Section>
 
-            <Section style={fulfillmentBox}>
-              <Text style={fulfillmentTitle}>
-                {fulfillmentType === 'pickup' ? '📍 Pickup' : '🚗 Delivery'}{' '}
-                Details
+            {/* Fulfillment Info */}
+            <Section style={fulfillmentSection}>
+              <Text style={sectionTitle}>
+                {fulfillmentType === 'pickup' ? 'Pickup Details' : 'Delivery Details'}
               </Text>
-              <Text style={fulfillmentDateStyle}>{formattedDate}</Text>
-              <Text style={fulfillmentInfo}>{fulfillmentDetails}</Text>
+              <Row>
+                <Column style={iconCol}>
+                  <Text style={icon}>
+                    {fulfillmentType === 'pickup' ? '📍' : '🚗'}
+                  </Text>
+                </Column>
+                <Column>
+                  <Text style={fulfillmentText}>
+                    <strong>{formattedDate}</strong>
+                    <br />
+                    {fulfillmentDetails}
+                  </Text>
+                </Column>
+              </Row>
+              <Text style={timeNote}>
+                I'll send another email closer to the date with the exact pickup
+                time window.
+              </Text>
+            </Section>
+
+            {/* What's Next */}
+            <Section style={highlightBox}>
+              <Text style={highlightText}>
+                <strong>What's next?</strong> I'll reach out if I have any
+                questions about your order. Otherwise, just show up on the
+                pickup date and your cookies will be ready!
+              </Text>
             </Section>
 
             <Text style={paragraph}>
-              If you have any questions about your order, feel free to reply to
-              this email. We're here to help!
+              If you have any questions, just reply to this email — I'm happy to
+              help!
             </Text>
 
-            <Text style={paragraph}>
-              Thank you for supporting All the Much Bake Shop!
+            <Section style={signoffSection}>
+              <Img
+                src="https://allthemuchbakeshop.com/Katie-pfp.jpg"
+                width="60"
+                height="60"
+                alt="Katie"
+                style={avatar}
+              />
+              <Text style={signoff}>
+                Happy snacking,
+                <br />
+                <strong>Katie</strong>
+              </Text>
+            </Section>
+          </Section>
+
+          <Section style={footer}>
+            <Text style={footerText}>
+              All the Much Bake Shop
               <br />
-              Katie
+              Baked with love in small batches
+            </Text>
+            <Text style={footerLinks}>
+              <Link href="https://allthemuchbakeshop.com" style={link}>
+                Website
+              </Link>
+              {' · '}
+              <Link href="https://instagram.com/allthemuchbakeshop" style={link}>
+                Instagram
+              </Link>
             </Text>
           </Section>
-          <Footer />
         </Container>
       </Body>
     </Html>
   );
 }
 
-const body = {
-  backgroundColor: '#ffffff',
+// Styles - warm rose/amber palette to match the brand
+const main = {
+  backgroundColor: '#fdf2f4', // rose-50 equivalent
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 };
 
 const container = {
   margin: '0 auto',
-  maxWidth: '600px',
-  backgroundColor: '#ffffff',
+  padding: '40px 20px',
+  maxWidth: '560px',
 };
 
-const content = {
-  padding: '32px 20px',
+const logoSection = {
+  textAlign: 'center' as const,
+  padding: '0',
+  marginTop: '-40px',
+};
+
+const logoImage = {
+  margin: '0 auto',
+};
+
+const contentSection = {
+  backgroundColor: '#ffffff',
+  borderRadius: '16px',
+  padding: '40px 32px',
+  border: '1px solid #fecdd3', // rose-200
 };
 
 const heading = {
-  fontSize: '24px',
-  fontWeight: 'bold',
-  color: '#1f2937',
-  margin: '0 0 24px',
+  fontSize: '28px',
+  fontWeight: '600',
+  color: '#78350f', // amber-900
+  margin: '0 0 24px 0',
+  textAlign: 'center' as const,
 };
 
 const paragraph = {
   fontSize: '16px',
-  lineHeight: '24px',
-  color: '#374151',
-  margin: '0 0 16px',
+  lineHeight: '26px',
+  color: '#78350f', // amber-900
+  margin: '0 0 20px 0',
 };
 
-const orderBox = {
-  backgroundColor: '#f9fafb',
-  border: '1px solid #e5e7eb',
-  borderRadius: '8px',
-  padding: '20px',
+const orderBadge = {
+  backgroundColor: '#f59e0b', // amber-500
+  borderRadius: '12px',
+  padding: '16px 24px',
+  margin: '24px 0',
+  textAlign: 'center' as const,
+};
+
+const orderBadgeLabel = {
+  fontSize: '12px',
+  color: '#ffffff',
+  margin: '0 0 4px 0',
+  textTransform: 'uppercase' as const,
+  letterSpacing: '1px',
+  opacity: 0.9,
+};
+
+const orderBadgeNumber = {
+  fontSize: '28px',
+  fontWeight: '700',
+  color: '#ffffff',
+  margin: '0',
+};
+
+const orderSection = {
   margin: '24px 0',
 };
 
-const orderBoxTitle = {
+const sectionTitle = {
   fontSize: '18px',
-  fontWeight: 'bold',
-  color: '#1f2937',
-  margin: '0 0 16px',
-};
-
-const hr = {
-  borderColor: '#e5e7eb',
-  margin: '16px 0',
-};
-
-const cookieRow = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  margin: '8px 0',
-};
-
-const cookieName = {
-  fontSize: '14px',
-  color: '#374151',
-  margin: '0',
-  flex: 1,
-};
-
-const cookiePrice = {
-  fontSize: '14px',
-  color: '#374151',
-  margin: '0',
   fontWeight: '600',
+  color: '#78350f', // amber-900
+  margin: '0 0 16px 0',
 };
 
-const totalRow = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  margin: '8px 0',
+const itemRow = {
+  marginBottom: '8px',
+};
+
+const itemNameCol = {
+  width: '70%',
+};
+
+const itemPriceCol = {
+  width: '30%',
+  textAlign: 'right' as const,
+};
+
+const itemName = {
+  fontSize: '15px',
+  color: '#92400e', // amber-800
+  margin: '0',
+};
+
+const itemPrice = {
+  fontSize: '15px',
+  color: '#92400e', // amber-800
+  margin: '0',
+};
+
+const divider = {
+  borderColor: '#fcd34d', // amber-300
+  margin: '16px 0',
 };
 
 const totalLabel = {
   fontSize: '16px',
-  fontWeight: 'bold',
-  color: '#1f2937',
-  margin: '0',
-  flex: 1,
-};
-
-const totalAmount = {
-  fontSize: '16px',
-  fontWeight: 'bold',
-  color: '#92400e',
-  margin: '0',
-};
-
-const fulfillmentBox = {
-  backgroundColor: '#fef3c7',
-  borderRadius: '8px',
-  padding: '20px',
-  margin: '24px 0',
-};
-
-const fulfillmentTitle = {
-  fontSize: '16px',
-  fontWeight: 'bold',
-  color: '#92400e',
-  margin: '0 0 8px',
-};
-
-const fulfillmentDateStyle = {
-  fontSize: '15px',
   fontWeight: '600',
-  color: '#78350f',
-  margin: '0 0 8px',
+  color: '#78350f', // amber-900
+  margin: '0',
 };
 
-const fulfillmentInfo = {
-  fontSize: '14px',
-  color: '#78350f',
+const totalPrice = {
+  fontSize: '20px',
+  fontWeight: '700',
+  color: '#78350f', // amber-900
   margin: '0',
-  lineHeight: '20px',
 };
+
+const fulfillmentSection = {
+  backgroundColor: '#fffbeb', // amber-50
+  borderRadius: '12px',
+  padding: '20px 24px',
+  margin: '24px 0',
+  border: '1px solid #fcd34d', // amber-300
+};
+
+const iconCol = {
+  width: '40px',
+  verticalAlign: 'top' as const,
+};
+
+const icon = {
+  fontSize: '24px',
+  margin: '0',
+};
+
+const fulfillmentText = {
+  fontSize: '15px',
+  lineHeight: '24px',
+  color: '#92400e', // amber-800
+  margin: '0',
+};
+
+const timeNote = {
+  fontSize: '14px',
+  lineHeight: '22px',
+  color: '#b45309', // amber-700
+  margin: '12px 0 0 0',
+  fontStyle: 'italic' as const,
+};
+
+const highlightBox = {
+  backgroundColor: '#ecfdf5', // green-50
+  borderRadius: '12px',
+  padding: '20px 24px',
+  margin: '24px 0',
+  border: '1px solid #6ee7b7', // green-300
+};
+
+const highlightText = {
+  fontSize: '15px',
+  lineHeight: '24px',
+  color: '#065f46', // green-800
+  margin: '0',
+};
+
+const signoffSection = {
+  marginTop: '24px',
+};
+
+const avatar = {
+  borderRadius: '50%',
+  marginBottom: '12px',
+};
+
+const signoff = {
+  fontSize: '16px',
+  lineHeight: '24px',
+  color: '#78350f', // amber-900
+  margin: '0',
+};
+
+const footer = {
+  textAlign: 'center' as const,
+  padding: '32px 0 0 0',
+};
+
+const footerText = {
+  fontSize: '14px',
+  lineHeight: '22px',
+  color: '#b45309', // amber-700
+  margin: '0 0 12px 0',
+};
+
+const footerLinks = {
+  fontSize: '14px',
+  color: '#b45309', // amber-700
+  margin: '0 0 12px 0',
+};
+
+const link = {
+  color: '#b45309', // amber-700
+  textDecoration: 'underline',
+};
+
+export default OrderConfirmationEmail;

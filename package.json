@@ -9,7 +9,8 @@
     "lint": "eslint",
     "postinstall": "prisma generate",
     "seed": "tsx prisma/scripts/seed.ts",
-    "migrate-and-seed": "prisma migrate deploy && npm run seed"
+    "migrate-and-seed": "prisma migrate deploy && npm run seed",
+    "email": "email dev -p 3001 --dir emails"
   },
   "prisma": {
     "seed": "tsx prisma/scripts/seed.ts"
@@ -35,6 +36,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@react-email/preview-server": "^5.0.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.15.6",
@@ -42,6 +44,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
+    "react-email": "^5.0.5",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5",

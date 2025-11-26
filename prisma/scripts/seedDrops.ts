@@ -114,42 +114,107 @@ export default async function seedDrops() {
     },
   })
 
+  // Superbowl drop - coming soon, placeholder dates
+  const superbowl = await prisma.drop.upsert({
+    where: { slug: 'superbowl' },
+    update: {
+      name: 'Superbowl Drop',
+      dropOpens: new Date('2025-01-25T17:00:00Z'), // TBA
+      pickupDate: new Date('2025-02-09T10:00:00Z'), // Super Bowl Sunday
+      deliveryDates: [
+        new Date('2025-02-08T10:00:00Z'),
+        new Date('2025-02-09T10:00:00Z'),
+      ],
+      pickupLocation: 'Alafaya Trail - Orlando, FL',
+      cutoffDate: new Date('2025-02-02T23:59:59Z'), // TBA
+      isActive: false, // Not active yet - coming soon
+      maxCookies: 72,
+    },
+    create: {
+      id: 'superbowl', // Match the frontend ID
+      name: 'Superbowl Drop',
+      slug: 'superbowl',
+      dropOpens: new Date('2025-01-25T17:00:00Z'), // TBA
+      pickupDate: new Date('2025-02-09T10:00:00Z'), // Super Bowl Sunday
+      deliveryDates: [
+        new Date('2025-02-08T10:00:00Z'),
+        new Date('2025-02-09T10:00:00Z'),
+      ],
+      pickupLocation: 'Alafaya Trail - Orlando, FL',
+      cutoffDate: new Date('2025-02-02T23:59:59Z'), // TBA
+      isActive: false, // Not active yet - coming soon
+      maxCookies: 72,
+      currentCookies: 0,
+    },
+  })
+
   console.log('✅ Created drops:')
   console.log(`  - ${candyCaneLane.name} (${candyCaneLane.slug})`)
   console.log(`  - ${catchMeIfYouCan.name} (${catchMeIfYouCan.slug})`)
   console.log(`  - ${sweaterWeather.name} (${sweaterWeather.slug})`)
+  console.log(`  - ${superbowl.name} (${superbowl.slug}) [coming soon]`)
 
-  // Associate products with drops
+  // Associate products with drops using upsert for idempotency
   if (cclCard && cclHalfDozen && cclDozen) {
-    await prisma.dropProduct.createMany({
-      data: [
-        { dropId: candyCaneLane.id, productId: cclCard.id, isActive: true, displayOrder: 1 },
-        { dropId: candyCaneLane.id, productId: cclHalfDozen.id, isActive: true, displayOrder: 2 },
-        { dropId: candyCaneLane.id, productId: cclDozen.id, isActive: true, displayOrder: 3 },
-      ],
-    })
+    await Promise.all([
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: candyCaneLane.id, productId: cclCard.id } },
+        update: { isActive: true, displayOrder: 1 },
+        create: { dropId: candyCaneLane.id, productId: cclCard.id, isActive: true, displayOrder: 1 },
+      }),
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: candyCaneLane.id, productId: cclHalfDozen.id } },
+        update: { isActive: true, displayOrder: 2 },
+        create: { dropId: candyCaneLane.id, productId: cclHalfDozen.id, isActive: true, displayOrder: 2 },
+      }),
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: candyCaneLane.id, productId: cclDozen.id } },
+        update: { isActive: true, displayOrder: 3 },
+        create: { dropId: candyCaneLane.id, productId: cclDozen.id, isActive: true, displayOrder: 3 },
+      }),
+    ])
     console.log(`✅ Associated Candy Cane Lane products with drop`)
   }
 
   if (ccmCard && ccmHalfDozen && ccmDozen) {
-    await prisma.dropProduct.createMany({
-      data: [
-        { dropId: catchMeIfYouCan.id, productId: ccmCard.id, isActive: true, displayOrder: 1 },
-        { dropId: catchMeIfYouCan.id, productId: ccmHalfDozen.id, isActive: true, displayOrder: 2 },
-        { dropId: catchMeIfYouCan.id, productId: ccmDozen.id, isActive: true, displayOrder: 3 },
-      ],
-    })
+    await Promise.all([
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: catchMeIfYouCan.id, productId: ccmCard.id } },
+        update: { isActive: true, displayOrder: 1 },
+        create: { dropId: catchMeIfYouCan.id, productId: ccmCard.id, isActive: true, displayOrder: 1 },
+      }),
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: catchMeIfYouCan.id, productId: ccmHalfDozen.id } },
+        update: { isActive: true, displayOrder: 2 },
+        create: { dropId: catchMeIfYouCan.id, productId: ccmHalfDozen.id, isActive: true, displayOrder: 2 },
+      }),
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: catchMeIfYouCan.id, productId: ccmDozen.id } },
+        update: { isActive: true, displayOrder: 3 },
+        create: { dropId: catchMeIfYouCan.id, productId: ccmDozen.id, isActive: true, displayOrder: 3 },
+      }),
+    ])
     console.log(`✅ Associated Can't Catch Me products with drop`)
   }
 
   if (swCard && swHalfDozen && swDozen) {
-    await prisma.dropProduct.createMany({
-      data: [
-        { dropId: sweaterWeather.id, productId: swCard.id, isActive: true, displayOrder: 1 },
-        { dropId: sweaterWeather.id, productId: swHalfDozen.id, isActive: true, displayOrder: 2 },
-        { dropId: sweaterWeather.id, productId: swDozen.id, isActive: true, displayOrder: 3 },
-      ],
-    })
+    await Promise.all([
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: sweaterWeather.id, productId: swCard.id } },
+        update: { isActive: true, displayOrder: 1 },
+        create: { dropId: sweaterWeather.id, productId: swCard.id, isActive: true, displayOrder: 1 },
+      }),
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: sweaterWeather.id, productId: swHalfDozen.id } },
+        update: { isActive: true, displayOrder: 2 },
+        create: { dropId: sweaterWeather.id, productId: swHalfDozen.id, isActive: true, displayOrder: 2 },
+      }),
+      prisma.dropProduct.upsert({
+        where: { dropId_productId: { dropId: sweaterWeather.id, productId: swDozen.id } },
+        update: { isActive: true, displayOrder: 3 },
+        create: { dropId: sweaterWeather.id, productId: swDozen.id, isActive: true, displayOrder: 3 },
+      }),
+    ])
     console.log(`✅ Associated Sweater Weather products with drop`)
   }
 

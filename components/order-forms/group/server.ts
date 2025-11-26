@@ -2,7 +2,7 @@
 
 import { groupOrderSchema, GroupOrderFormData } from './schema'
 import { prisma } from '@/lib/prisma'
-import { sendOrderConfirmationEmail } from '@/lib/email'
+import { sendOrderConfirmationEmail, sendKatieOrderNotification } from '@/lib/email'
 
 interface CookieProduct {
   id: number;
@@ -92,22 +92,42 @@ export async function submitGroupOrder(data: GroupOrderFormData & { dropId: stri
     })
 
     // Send order confirmation email asynchronously
+    const cookies = [
+      { name: 'Snowman', quantity: snowmanQty, price: 4 },
+      { name: 'Gingerbread', quantity: gingerbreadQty, price: 4 },
+      { name: 'Mittens', quantity: mittensQty, price: 4 },
+    ].filter(cookie => cookie.quantity > 0)
+
+    const fulfillmentDetails = validatedData.fulfillmentType === 'pickup'
+      ? `Group order coordinated by ${validatedData.coordinatorName}\nPickup location details will be sent closer to your requested date.`
+      : `Group order coordinated by ${validatedData.coordinatorName}\nDelivery details will be sent closer to your requested date.`
+
     sendOrderConfirmationEmail(validatedData.email, {
       orderNumber: order.id,
       customerName: validatedData.name,
-      cookies: [
-        { name: 'Snowman', quantity: snowmanQty, price: 4 },
-        { name: 'Gingerbread', quantity: gingerbreadQty, price: 4 },
-        { name: 'Mittens', quantity: mittensQty, price: 4 },
-      ].filter(cookie => cookie.quantity > 0),
+      cookies,
       total: data.totalPrice,
       fulfillmentType: validatedData.fulfillmentType,
-      fulfillmentDetails: validatedData.fulfillmentType === 'pickup'
-        ? `Group order coordinated by ${validatedData.coordinatorName}\nPickup location details will be sent closer to your requested date.`
-        : `Group order coordinated by ${validatedData.coordinatorName}\nDelivery details will be sent closer to your requested date.`,
+      fulfillmentDetails,
       fulfillmentDate: new Date(validatedData.requestedDate),
     }).catch((error) => {
       console.error('Failed to send order confirmation email:', error)
+    })
+
+    // Send Katie a notification
+    sendKatieOrderNotification({
+      orderNumber: order.id,
+      customerName: validatedData.name,
+      customerEmail: validatedData.email,
+      customerPhone: validatedData.phone,
+      orderType: 'group',
+      cookies,
+      total: data.totalPrice,
+      fulfillmentType: validatedData.fulfillmentType,
+      fulfillmentDetails,
+      fulfillmentDate: new Date(validatedData.requestedDate),
+    }).catch((error) => {
+      console.error('Failed to send Katie order notification:', error)
     })
 
     return { success: true, orderId: order.id }

@@ -72,7 +72,7 @@ export async function sendWelcomeEmail(
   return sendEmail({
     to,
     subject: 'Welcome to All the Much Bake Shop!',
-    react: WelcomeEmail({ name }),
+    react: WelcomeEmail({ name, email: to }),
   });
 }
 
@@ -102,32 +102,33 @@ export async function sendOrderConfirmationEmail(
 }
 
 /**
- * Send a newsletter/announcement to subscribers
+ * Send Katie an order notification email
  */
-export async function sendNewsletterEmail(
-  to: string | string[],
-  subject: string,
-  content: {
-    title: string;
-    message: string;
-    ctaText?: string;
-    ctaUrl?: string;
+export async function sendKatieOrderNotification(
+  orderDetails: {
+    orderNumber: number;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    orderType: 'individual' | 'business' | 'group';
+    businessName?: string;
+    cookies: Array<{ name: string; quantity: number; price: number }>;
+    total: number;
+    fulfillmentType: 'pickup' | 'delivery';
+    fulfillmentDetails: string;
+    fulfillmentDate: Date;
+    dropName?: string;
   }
 ): Promise<SendEmailResult> {
-  // Template will be imported once created
-  const { NewsletterEmail } = await import('@/emails/NewsletterEmail');
+  const { KatieOrderConfirmationEmail } = await import('@/emails/KatieOrderConfirmationEmail');
 
   return sendEmail({
-    to,
-    subject,
-    react: NewsletterEmail(content),
+    to: 'katie@allthemuchbakeshop.com',
+    subject: `KA-CHING! Order #${orderDetails.orderNumber} - $${orderDetails.total}`,
+    react: KatieOrderConfirmationEmail(orderDetails),
   });
 }
 
-/**
- * Batch send emails to multiple recipients
- * Useful for sending newsletters to all subscribers
- */
 export async function batchSendEmail(
   recipients: string[],
   subject: string,
