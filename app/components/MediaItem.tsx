@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 export type MediaType = 'image' | 'video';
 
@@ -49,11 +50,13 @@ export function MediaItem({ media, alt, isVisible = true, className = '', onClic
   }
 
   return (
-    <img
+    <Image
       src={media.src}
       alt={alt}
-      className={className}
+      fill
+      className={`object-cover ${className}`}
       onClick={onClick}
+      sizes="(max-width: 768px) 100vw, 50vw"
     />
   );
 }

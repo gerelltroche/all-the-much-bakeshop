@@ -2,6 +2,57 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 
+// JSON-LD structured data for LocalBusiness
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Bakery",
+  name: "All The Much Bake Shop",
+  description:
+    "Handcrafted custom sugar cookies that taste as incredible as they look. Specializing in decorated cookies for celebrations, seasonal drops, and appreciation gifts.",
+  url: "https://allthemuchbakeshop.com",
+  logo: "https://allthemuchbakeshop.com/AllTheMuchBakeshopLogoTransparentBack.png",
+  image: "https://allthemuchbakeshop.com/AllTheMuchBakeshopLogoTransparentBack.png",
+  email: "katie@allthemuchbakeshop.com",
+  telephone: "+1-407-279-0014",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Orlando",
+    addressRegion: "FL",
+    addressCountry: "US",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 28.5383,
+    longitude: -81.3792,
+  },
+  areaServed: {
+    "@type": "GeoCircle",
+    geoMidpoint: {
+      "@type": "GeoCoordinates",
+      latitude: 28.5383,
+      longitude: -81.3792,
+    },
+    geoRadius: "50000",
+  },
+  priceRange: "$$",
+  servesCuisine: "Bakery",
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Cookie Drops",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Product",
+          name: "Custom Decorated Sugar Cookies",
+          description: "Handcrafted decorated sugar cookies for celebrations and seasonal events",
+        },
+      },
+    ],
+  },
+  sameAs: ["https://instagram.com/allthemuchbakeshop"],
+};
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -88,6 +139,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {/* LLM optimization - link to llms.txt for AI crawlers */}
+        <link rel="llms" href="/llms.txt" />
+        <link rel="llms-full" href="/llms-full.txt" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased bg-gradient-to-b from-rose-50 to-amber-50`}
       >

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useOrder } from '../context/OrderContext';
 
 interface Product {
@@ -88,7 +89,7 @@ export function ProductCard({
       <div className="flex gap-4 p-4">
         {/* Product Media (Image or Video) */}
         {firstMedia && (
-          <div className="w-28 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100">
+          <div className="w-28 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 relative">
             {isFirstMediaVideo ? (
               <video
                 ref={videoRef}
@@ -100,10 +101,12 @@ export function ProductCard({
                 autoPlay
               />
             ) : (
-              <img
+              <Image
                 src={firstMedia}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                sizes="112px"
               />
             )}
           </div>

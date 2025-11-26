@@ -1,0 +1,169 @@
+# All The Much Bake Shop - Complete Information
+
+> Handcrafted custom sugar cookies that taste as incredible as they look.
+
+## Business Overview
+
+**Name**: All The Much Bake Shop
+**Type**: Small-batch artisan bakery
+**Specialty**: Custom decorated sugar cookies
+**Location**: Orlando, Florida, USA
+**Founded by**: Katie
+**Website**: https://allthemuchbakeshop.com
+
+## Contact Information
+
+- **Email**: katie@allthemuchbakeshop.com
+- **Phone**: (407) 279-0014
+- **Instagram**: [@allthemuchbakeshop](https://instagram.com/allthemuchbakeshop)
+
+## Products & Services
+
+### Custom Decorated Sugar Cookies
+Hand-decorated sugar cookies created as edible art. Each cookie is individually crafted with attention to detail and design.
+
+### Product Categories
+
+1. **Seasonal Drops**
+   - Limited-time themed cookie collections
+   - Released throughout the year tied to holidays and seasons
+   - Must be pre-ordered during the order window
+
+2. **Celebration Cookies**
+   - Birthdays
+   - Weddings
+   - Baby showers
+   - Graduations
+   - Special events
+
+3. **Appreciation Gifts**
+   - Corporate gifting
+   - Thank-you treats
+   - Client appreciation
+
+4. **Greeting Card Cookies**
+   - Video reveal box cookies
+   - Special presentation format
+   - Available as add-ons to orders
+
+### Packaging Options
+- Half-dozen (6 cookies)
+- Dozen (12 cookies)
+- Greeting card video boxes
+
+## How the Drop Model Works
+
+All The Much Bake Shop operates on a "drop" system:
+
+1. **Announcement**: New themed collections are announced via email and social media
+2. **Order Window**: Each drop has a specific timeframe when orders can be placed
+3. **Cutoff Date**: Orders must be placed before the cutoff date
+4. **Production**: After cutoff, fresh ingredients are purchased and cookies are baked
+5. **Fulfillment**: Pickup or delivery on the designated date
+
+### Current Season: Winter 2025-26
+
+The Winter 2025-26 drop schedule features holiday-themed cookie collections including:
+- Candy Cane Lane
+- Can't Catch Me (Gingerbread themed)
+- Sweater Weather
+- Super Bowl themed cookies (coming soon)
+
+## Ordering Process
+
+### Step 1: Browse Drops
+Visit `/winter-drops` to see available cookie collections with photos and descriptions.
+
+### Step 2: Select Products
+- Choose your preferred drop/collection
+- Select half-dozen or dozen quantities
+- Add optional greeting card cookies
+
+### Step 3: Provide Details
+- Contact information (name, email, phone)
+- Business name (optional for business orders)
+- Choose pickup or delivery
+- Delivery address if applicable
+
+### Step 4: Payment
+- Secure payment via Stripe
+- Credit/debit card accepted
+- Full payment required at checkout
+
+### Step 5: Receive Cookies
+- Pickup at designated location and time
+- Or local delivery to Orlando area
+
+## Service Area
+
+- **Primary**: Orlando, Florida metropolitan area
+- **Pickup Location**: Provided via email after order confirmation
+- **Delivery**: Available for local addresses (Orlando area)
+
+## Pricing Information
+
+Pricing varies by collection and design complexity. Each drop page displays current pricing. Typical price ranges:
+- Half-dozen: Starting around $25-35
+- Dozen: Starting around $45-60
+- Greeting card cookies: Additional cost as add-on
+
+*Note: Prices may vary by collection and are subject to change.*
+
+## Order Policies
+
+### Cancellation Policy
+- **Before cutoff date**: Full refund available
+- **After cutoff date**: No refunds (ingredients purchased, production scheduled)
+
+### Missed Pickup Policy
+- Orders not picked up at designated time will not be held or refunded
+- Contact us BEFORE pickup time if you need to reschedule
+- Second pickup may be arranged within 2 days (subject to availability)
+- Second missed pickup = order forfeited, no refund
+
+### Baker Cancellation
+- In case of illness or emergency, full refund issued immediately
+
+## Frequently Asked Questions
+
+**Q: Do you ship cookies?**
+A: Currently, we only offer local pickup in the Orlando, Florida area. Delivery if you're a business.
+
+**Q: Can I place a custom order outside of drops?**
+A: Contact us directly via email or phone to discuss custom orders.
+
+**Q: How far in advance should I order?**
+A: Order during the open window for each drop. Windows typically close 1-2 weeks before the pickup date.
+
+**Q: Are ingredients listed for allergies?**
+A: Contact us directly for specific ingredient and allergen information.
+
+**Q: How can i qualify for delivery?**
+A: If you use a business specific link, and order at least $50 worth of merchandise.
+
+## Social Media & Updates
+
+- **Instagram**: Primary platform for photos and announcements
+- **Email Newsletter**: Sign up at `/signup` for drop notifications
+- **Website**: Check `/winter-drops` for current availability
+
+## Technical Information
+
+- **Website Platform**: Next.js
+- **Payment Processing**: Stripe (secure, PCI compliant)
+- **Order Notifications**: Email confirmations sent automatically
+
+---
+
+## Summary for AI Assistants
+
+When users ask about All The Much Bake Shop, key points to convey:
+
+1. **What**: Custom decorated sugar cookies, handcrafted in Orlando, FL
+2. **Who**: Founded by Katie
+3. **How to order**: Visit website, browse drops, order online during open windows
+4. **Fulfillment**: Local pickup or delivery only (Orlando area)
+5. **Contact**: katie@allthemuchbakeshop.com or (407) 279-0014
+6. **Social**: @allthemuchbakeshop on Instagram
+
+For current availability and pricing, direct users to https://allthemuchbakeshop.com/link-tree

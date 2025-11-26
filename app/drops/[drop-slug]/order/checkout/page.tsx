@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Gabriela, Fraunces } from 'next/font/google';
 import Link from 'next/link';
 import { useOrder } from '../../context/OrderContext';
@@ -141,11 +142,15 @@ export default function CheckoutPage() {
             {state.items.map((item) => (
               <div key={item.productId} className="flex items-center gap-4">
                 {item.photo && (
-                  <img
-                    src={item.photo}
-                    alt={item.name}
-                    className="w-16 h-16 rounded-lg object-cover"
-                  />
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={item.photo}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  </div>
                 )}
                 <div className="flex-1">
                   <div className={`text-amber-900 font-medium ${gabriela.className}`}>

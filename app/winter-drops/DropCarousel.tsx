@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 export type MediaType = 'image' | 'video';
 
@@ -128,11 +129,13 @@ export function DropCarousel({ drop, orderType, gabrielaClassName, tangerineClas
                 autoPlay
               />
             ) : (
-              <img
-                src={drop.media[0]?.src}
+              <Image
+                src={drop.media[0]?.src || ''}
                 alt="Coming soon"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
                 style={{ filter: 'blur(4px)' }}
+                sizes="(max-width: 768px) 100vw, 192px"
               />
             )}
             {/* Optional overlay for extra "mystery" effect */}
@@ -223,14 +226,16 @@ export function DropCarousel({ drop, orderType, gabrielaClassName, tangerineClas
               autoPlay
             />
           ) : (
-            <img
-              src={currentMedia?.src}
+            <Image
+              src={currentMedia?.src || ''}
               alt={drop.name}
-              className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+              fill
+              className="object-cover cursor-pointer hover:opacity-90 transition-opacity"
               onClick={(e) => {
                 e.preventDefault();
                 openLightbox();
               }}
+              sizes="(max-width: 768px) 100vw, 192px"
             />
           )}
 
@@ -356,10 +361,12 @@ export function DropCarousel({ drop, orderType, gabrielaClassName, tangerineClas
                 autoPlay
               />
             ) : (
-              <img
-                src={currentMedia?.src}
+              <Image
+                src={currentMedia?.src || ''}
                 alt={drop.name}
-                className="w-full h-full object-contain rounded-lg"
+                fill
+                className="object-contain rounded-lg"
+                sizes="(max-width: 768px) 100vw, 896px"
               />
             )}
 

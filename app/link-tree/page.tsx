@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Gabriela, Tangerine, Fraunces } from 'next/font/google';
 
 const gabriela = Gabriela({
@@ -48,11 +49,14 @@ export default function LinkTreePage() {
       <div className="max-w-md mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden border-4 border-rose-200">
-            <img
+          <div className="w-24 h-24 rounded-full mx-auto mb-4 shadow-lg overflow-hidden border-4 border-rose-200 relative">
+            <Image
               src="/Katie-pfp.jpg"
               alt="Katie - All the Much Bake Shop"
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              sizes="96px"
+              priority
             />
           </div>
           <h1 className={`text-7xl font-bold text-amber-900 mb-2 ${tangerine.className}`}>

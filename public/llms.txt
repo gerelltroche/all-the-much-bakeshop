@@ -1,0 +1,58 @@
+# All The Much Bake Shop
+
+> Handcrafted custom sugar cookies that taste as incredible as they look.
+
+## About
+
+All The Much Bake Shop is a small-batch bakery based in Orlando, Florida, specializing in custom decorated sugar cookies. Founded by Katie, we create edible art for celebrations, seasonal events, and appreciation gifts.
+
+## What We Offer
+
+- **Custom Decorated Sugar Cookies**: Hand-decorated cookies for any occasion
+- **Seasonal Drops**: Limited-time themed cookie collections released throughout the year
+- **Celebration Cookies**: Perfect for birthdays, weddings, baby showers, and special events
+- **Appreciation Gifts**: Corporate gifting and thank-you treats
+
+## Current Season: Winter 2025-26
+
+We operate on a "drop" model where themed cookie collections are available for pre-order during specific windows. Current and upcoming drops include seasonal holiday designs.
+
+## How to Order
+
+1. Visit our Winter Drops page to see available collections
+2. Select your items and quantities
+3. Provide contact and pickup/delivery details
+4. Complete payment via credit card
+5. Pick up your order on the designated date or receive delivery
+
+## Ordering Details
+
+- **Location**: Orlando, Florida area
+- **Fulfillment**: Pickup or local delivery available
+- **Payment**: Credit card (Stripe)
+- **Order Window**: Each drop has a cutoff date for orders
+
+## Contact Information
+
+- **Website**: https://allthemuchbakeshop.com
+- **Email**: katie@allthemuchbakeshop.com
+- **Phone**: (407) 279-0014
+- **Instagram**: @allthemuchbakeshop
+
+## Key Pages
+
+- `/` - Homepage (redirects to link tree)
+- `/link-tree` - Main landing page with all links
+- `/winter-drops` - Current seasonal drop schedule and ordering
+- `/signup` - Email newsletter signup
+
+## Pricing
+
+Cookies are sold by the half-dozen and dozen. Pricing varies by design complexity and collection. Greeting card cookies (video reveal boxes) are also available as add-ons.
+
+## Policies
+
+- Full refunds available until order cutoff date
+- No refunds after cutoff (ingredients purchased and production begins)
+- Missed pickups are not refunded
+- Contact us before pickup time if you need to reschedule
