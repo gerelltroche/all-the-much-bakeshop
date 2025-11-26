@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Gabriela, Fraunces } from 'next/font/google';
 import Link from 'next/link';
 import { useOrder } from '../../context/OrderContext';
 import { ProgressStepper } from '../../components/ProgressStepper';
+import { StripePaymentWrapper } from './components/StripePaymentWrapper';
 
 const gabriela = Gabriela({
   weight: '400',
@@ -17,18 +18,18 @@ const fraunces = Fraunces({
   subsets: ['latin'],
 });
 
-type PaymentMethod = 'card' | 'venmo' | 'cash';
-
 export default function CheckoutPage() {
   const params = useParams();
   const router = useRouter();
   const dropSlug = params['drop-slug'] as string;
-  const { state, getTotal, getTotalItems, dispatch } = useOrder();
+  const { state, getTotal, getTotalItems } = useOrder();
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('venmo');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  // Ref for triggering Stripe form submission
+  const stripeSubmitRef = useRef<(() => Promise<void>) | null>(null);
 
   // Redirect if no items or no customer details
   useEffect(() => {
@@ -42,15 +43,8 @@ export default function CheckoutPage() {
   const subtotal = getTotal();
   const total = subtotal;
 
-  const handleSubmitOrder = async () => {
-    if (!agreedToTerms) {
-      setError('Please agree to the terms to continue');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setError(null);
-
+  const handleStripePaymentSuccess = async (paymentIntentId: string) => {
+    // Submit order with payment info
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -64,8 +58,9 @@ export default function CheckoutPage() {
           })),
           customer: state.customer,
           fulfillment: state.fulfillment,
-          paymentMethod,
+          paymentMethod: 'card',
           totalAmount: total,
+          stripePaymentIntentId: paymentIntentId,
         }),
       });
 
@@ -75,12 +70,33 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to submit order');
       }
 
-      // Clear order and redirect to confirmation
+      // Redirect to confirmation
       router.push(`/drops/${dropSlug}/order/confirmation?orderId=${data.orderId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
-    } finally {
+      setError(err instanceof Error ? err.message : 'Failed to complete order');
       setIsSubmitting(false);
+    }
+  };
+
+  const handleStripePaymentError = (errorMessage: string) => {
+    setError(errorMessage);
+    setIsSubmitting(false);
+  };
+
+  const handleSubmitOrder = async () => {
+    if (!agreedToTerms) {
+      setError('Please agree to the terms to continue');
+      return;
+    }
+
+    setError(null);
+
+    // Trigger Stripe form submission
+    if (stripeSubmitRef.current) {
+      setIsSubmitting(true);
+      await stripeSubmitRef.current();
+    } else {
+      setError('Payment form not ready. Please try again.');
     }
   };
 
@@ -136,7 +152,7 @@ export default function CheckoutPage() {
                     {item.name}
                   </div>
                   <div className={`text-sm text-amber-600 ${gabriela.className}`}>
-                    {item.quantity} × ${item.price.toFixed(2)}
+                    {item.quantity} x ${item.price.toFixed(2)}
                   </div>
                 </div>
                 <div className={`text-amber-900 font-medium ${gabriela.className}`}>
@@ -203,7 +219,7 @@ export default function CheckoutPage() {
             href={`/drops/${dropSlug}/order/contact`}
             className={`inline-block mt-4 text-sm text-amber-600 hover:text-amber-800 ${gabriela.className}`}
           >
-            Edit contact →
+            Edit contact &rarr;
           </Link>
         </div>
 
@@ -213,49 +229,19 @@ export default function CheckoutPage() {
             Payment Method
           </h2>
 
-          <div className="space-y-3">
-            <button
-              onClick={() => setPaymentMethod('venmo')}
-              className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${
-                paymentMethod === 'venmo'
-                  ? 'bg-gradient-to-r from-orange-300 to-rose-300 text-stone-900 shadow-lg'
-                  : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border-2 border-amber-200'
-              }`}
-            >
-              <div className="text-2xl">💳</div>
-              <div className="text-left">
-                <div className={`font-medium ${gabriela.className}`}>Venmo</div>
-                <div className={`text-sm opacity-80 ${gabriela.className}`}>
-                  Pay via Venmo after ordering
-                </div>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setPaymentMethod('cash')}
-              className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${
-                paymentMethod === 'cash'
-                  ? 'bg-gradient-to-r from-orange-300 to-rose-300 text-stone-900 shadow-lg'
-                  : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border-2 border-amber-200'
-              }`}
-            >
-              <div className="text-2xl">💵</div>
-              <div className="text-left">
-                <div className={`font-medium ${gabriela.className}`}>Cash at Pickup</div>
-                <div className={`text-sm opacity-80 ${gabriela.className}`}>
-                  Pay when you pick up your order
-                </div>
-              </div>
-            </button>
-          </div>
-
-          {paymentMethod === 'venmo' && (
-            <div className={`mt-4 p-4 bg-blue-50 rounded-xl ${gabriela.className}`}>
-              <p className="text-blue-800 text-sm">
-                After placing your order, you'll receive Venmo payment instructions via email.
-                Your order will be confirmed once payment is received.
-              </p>
-            </div>
+          {/* Card Payment Form */}
+          {state.customer && (
+            <StripePaymentWrapper
+                amount={total}
+                customerEmail={state.customer.email}
+                customerName={state.customer.name}
+                dropId={state.dropId || ''}
+                onPaymentSuccess={handleStripePaymentSuccess}
+                onPaymentError={handleStripePaymentError}
+                isProcessing={isSubmitting}
+                setIsProcessing={setIsSubmitting}
+                submitRef={stripeSubmitRef}
+              />
           )}
         </div>
 
@@ -347,10 +333,10 @@ export default function CheckoutPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Placing Order...
+                  Processing Payment...
                 </span>
               ) : (
-                `Place Order - $${total.toFixed(2)}`
+                `Pay $${total.toFixed(2)}`
               )}
             </button>
           </div>

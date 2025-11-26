@@ -32,6 +32,7 @@ const createOrderSchema = z.object({
   fulfillment: fulfillmentSchema,
   paymentMethod: z.enum(['card', 'venmo', 'cash']),
   totalAmount: z.number(),
+  stripePaymentIntentId: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -82,6 +83,11 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Determine payment status based on payment method
+    const isCardPayment = data.paymentMethod === 'card' && data.stripePaymentIntentId;
+    const paymentStatus = isCardPayment ? 'succeeded' : 'pending';
+    const orderStatus = isCardPayment ? 'confirmed' : 'pending';
+
     // Create the order
     const order = await prisma.order.create({
       data: {
@@ -96,7 +102,7 @@ export async function POST(request: NextRequest) {
         deliveryState: data.fulfillment.state,
         deliveryZip: data.fulfillment.zipCode,
         totalAmount: data.totalAmount,
-        status: 'pending',
+        status: orderStatus,
         orderItems: {
           create: data.items.map((item) => ({
             productId: item.productId,
@@ -107,8 +113,9 @@ export async function POST(request: NextRequest) {
         payments: {
           create: {
             amount: data.totalAmount,
-            status: 'pending',
+            status: paymentStatus,
             paymentMethod: data.paymentMethod,
+            paymentIntentId: data.stripePaymentIntentId || null,
           },
         },
       },
