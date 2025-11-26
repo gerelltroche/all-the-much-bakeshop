@@ -12,7 +12,7 @@ export default async function seedProducts() {
       description: 'A festive greeting card featuring our Candy Cane Lane cookie',
       price: 10.00,
       uom: 'card',
-      photos: ['/products/candy_cane_lane.jpg'],
+      photos: ['/products/candy_cane_lane/greeting-card.mp4'],
     },
     create: {
       name: 'Candy Cane Lane - Greeting Card',
@@ -20,7 +20,7 @@ export default async function seedProducts() {
       price: 10.00,
       uom: 'card',
       sku: 'CCL-CARD',
-      photos: ['/products/candy_cane_lane.jpg'],
+      photos: ['/products/candy_cane_lane/greeting-card.mp4'],
     },
   })
 
@@ -31,7 +31,7 @@ export default async function seedProducts() {
       description: 'Six delicious Candy Cane Lane cookies',
       price: 25.00,
       uom: 'box',
-      photos: ['/products/candy_cane_lane.jpg'],
+      photos: ['/products/candy_cane_lane/half-dozen.jpg'],
     },
     create: {
       name: 'Candy Cane Lane - Half Dozen',
@@ -39,7 +39,7 @@ export default async function seedProducts() {
       price: 25.00,
       uom: 'box',
       sku: 'CCL-6',
-      photos: ['/products/candy_cane_lane.jpg'],
+      photos: ['/products/candy_cane_lane/half-dozen.jpg'],
     },
   })
 
@@ -50,7 +50,7 @@ export default async function seedProducts() {
       description: 'A dozen festive Candy Cane Lane cookies',
       price: 50.00,
       uom: 'box',
-      photos: ['/products/candy_cane_lane.jpg'],
+      photos: ['/products/candy_cane_lane/dozen.jpg'],
     },
     create: {
       name: 'Candy Cane Lane - Dozen',
@@ -58,7 +58,7 @@ export default async function seedProducts() {
       price: 50.00,
       uom: 'box',
       sku: 'CCL-12',
-      photos: ['/products/candy_cane_lane.jpg'],
+      photos: ['/products/candy_cane_lane/dozen.jpg'],
     },
   })
 
@@ -70,7 +70,7 @@ export default async function seedProducts() {
       description: "A playful greeting card featuring our Can't Catch Me cookie",
       price: 10.00,
       uom: 'card',
-      photos: ['/products/catch_me_if_you_can.jpg'],
+      photos: ['/products/cant_catch_me/greeting-card.mp4'],
     },
     create: {
       name: "Can't Catch Me - Greeting Card",
@@ -78,7 +78,7 @@ export default async function seedProducts() {
       price: 10.00,
       uom: 'card',
       sku: 'CCM-CARD',
-      photos: ['/products/catch_me_if_you_can.jpg'],
+      photos: ['/products/cant_catch_me/greeting-card.mp4'],
     },
   })
 
@@ -89,7 +89,7 @@ export default async function seedProducts() {
       description: "Six delightful Can't Catch Me cookies",
       price: 25.00,
       uom: 'box',
-      photos: ['/products/catch_me_if_you_can.jpg'],
+      photos: ['/products/cant_catch_me/half-dozen.jpg'],
     },
     create: {
       name: "Can't Catch Me - Half Dozen",
@@ -97,7 +97,7 @@ export default async function seedProducts() {
       price: 25.00,
       uom: 'box',
       sku: 'CCM-6',
-      photos: ['/products/catch_me_if_you_can.jpg'],
+      photos: ['/products/cant_catch_me/half-dozen.jpg'],
     },
   })
 
@@ -108,7 +108,7 @@ export default async function seedProducts() {
       description: "A dozen fun Can't Catch Me cookies",
       price: 50.00,
       uom: 'box',
-      photos: ['/products/catch_me_if_you_can.jpg'],
+      photos: ['/products/cant_catch_me/dozen.jpg'],
     },
     create: {
       name: "Can't Catch Me - Dozen",
@@ -116,7 +116,7 @@ export default async function seedProducts() {
       price: 50.00,
       uom: 'box',
       sku: 'CCM-12',
-      photos: ['/products/catch_me_if_you_can.jpg'],
+      photos: ['/products/cant_catch_me/dozen.jpg'],
     },
   })
 
@@ -128,7 +128,7 @@ export default async function seedProducts() {
       description: 'A cozy greeting card featuring our Sweater Weather cookie',
       price: 10.00,
       uom: 'card',
-      photos: ['/products/sweater_weather.jpg'],
+      photos: ['/products/sweater_weather/greeting-card.mp4'],
     },
     create: {
       name: 'Sweater Weather - Greeting Card',
@@ -136,7 +136,7 @@ export default async function seedProducts() {
       price: 10.00,
       uom: 'card',
       sku: 'SW-CARD',
-      photos: ['/products/sweater_weather.jpg'],
+      photos: ['/products/sweater_weather/greeting-card.mp4'],
     },
   })
 
@@ -147,7 +147,7 @@ export default async function seedProducts() {
       description: 'Six cozy Sweater Weather cookies',
       price: 25.00,
       uom: 'box',
-      photos: ['/products/sweater_weather.jpg'],
+      photos: ['/products/sweater_weather/half-dozen.jpg'],
     },
     create: {
       name: 'Sweater Weather - Half Dozen',
@@ -155,7 +155,7 @@ export default async function seedProducts() {
       price: 25.00,
       uom: 'box',
       sku: 'SW-6',
-      photos: ['/products/sweater_weather.jpg'],
+      photos: ['/products/sweater_weather/half-dozen.jpg'],
     },
   })
 
@@ -166,7 +166,7 @@ export default async function seedProducts() {
       description: 'A dozen warm Sweater Weather cookies',
       price: 50.00,
       uom: 'box',
-      photos: ['/products/sweater_weather.jpg'],
+      photos: ['/products/sweater_weather/dozen.jpg'],
     },
     create: {
       name: 'Sweater Weather - Dozen',
@@ -174,7 +174,7 @@ export default async function seedProducts() {
       price: 50.00,
       uom: 'box',
       sku: 'SW-12',
-      photos: ['/products/sweater_weather.jpg'],
+      photos: ['/products/sweater_weather/dozen.jpg'],
     },
   })
 

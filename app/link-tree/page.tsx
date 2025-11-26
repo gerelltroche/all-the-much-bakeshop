@@ -50,8 +50,8 @@ export default function LinkTreePage() {
               className="w-full h-full object-cover"
             />
           </div>
-          <h1 className={`text-5xl font-bold text-amber-900 mb-2 ${tangerine.className}`}>
-            All the Much Bake Shop
+          <h1 className={`text-7xl font-bold text-amber-900 mb-2 ${tangerine.className}`}>
+            All the Much <br /> Bake Shop
           </h1>
           <p className={`text-amber-700 ${gabriela.className}`}>
             handcrafted treats made with love 💕

@@ -11,7 +11,7 @@ export interface Drop {
   gradient: string;
   images: string[];
   flavor: string;
-  dropOpens: string;
+  dropCloses: string;
   pickupDate: string;
   comingSoon: boolean;
 }
@@ -77,7 +77,7 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
 
   if (drop.comingSoon) {
     return (
-      <div className={`block w-full bg-white rounded-2xl shadow-md border-2 ${drop.borderColor} relative overflow-hidden opacity-60`}>
+      <div className={`block w-full bg-white rounded-2xl shadow-md border-2 ${drop.borderColor} relative overflow-hidden`}>
         {/* Coming Soon Ribbon */}
         <div className="absolute top-4 -left-10 bg-red-800 text-white pl-8 pr-12 py-1 -rotate-45 shadow-lg z-10">
           <span className="text-xs font-bold">COMING SOON</span>
@@ -85,12 +85,12 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
 
         <div className="flex flex-col md:flex-row gap-4 p-5">
           {/* Blurred teaser image */}
-          <div className="relative w-full md:w-35 h-35 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+          <div className="relative w-full md:w-48 h-48 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
             <img
               src={drop.images[0]}
               alt="Coming soon"
               className="w-full h-full object-cover"
-              style={{ filter: 'blur(12px)' }}
+              style={{ filter: 'blur(4px)' }}
             />
             {/* Optional overlay for extra "mystery" effect */}
             <div className="absolute inset-0 bg-white/20" />
@@ -100,11 +100,11 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
           <div className="flex-1 flex flex-col gap-3 justify-between">
             <div className="flex flex-col gap-3">
               <div>
-                <div className={`text-4xl font-bold text-amber-900 ${tangerineClassName}`}>
+                <div className={`text-4xl font-bold text-amber-900 ${tangerineClassName} mb-2`}>
                   {drop.name}
                 </div>
-                <div className={`text-md text-amber-700 ${gabrielaClassName}`}>
-                  Flavors will be announced soon!
+                <div className={`text-md text-amber-700 ${gabrielaClassName} mb-2`}>
+                  Game day treats coming soon!
                 </div>
               </div>
 
@@ -158,22 +158,31 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
   }
 
   return (
-    <div className={`block w-full bg-white rounded-2xl shadow-md border-2 ${drop.borderColor} overflow-hidden`}>
+    <a
+      href={drop.href}
+      className={`block w-full bg-white rounded-2xl shadow-md border-2 ${drop.borderColor} overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer`}
+    >
       <div className="flex flex-col md:flex-row gap-4 p-5">
         {/* Image carousel */}
         <div className="relative w-full md:w-48 h-48 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
           <img
             src={drop.images[currentImageIndex]}
             alt={drop.name}
-            className="w-full h-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
-            onClick={openLightbox}
+            className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={(e) => {
+              e.preventDefault();
+              openLightbox();
+            }}
           />
 
           {drop.images.length > 1 && (
             <>
               {/* Navigation arrows */}
               <button
-                onClick={prevImage}
+                onClick={(e) => {
+                  e.preventDefault();
+                  prevImage();
+                }}
                 className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
                 aria-label="Previous image"
               >
@@ -183,7 +192,10 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
               </button>
 
               <button
-                onClick={nextImage}
+                onClick={(e) => {
+                  e.preventDefault();
+                  nextImage();
+                }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
                 aria-label="Next image"
               >
@@ -225,8 +237,8 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <div className="flex flex-col">
-                  <span className="text-sm">Drop opens:</span>
-                  <span className="font-bold text-base">{drop.dropOpens}</span>
+                  <span className="text-sm">Order by:</span>
+                  <span className="font-bold text-base">{drop.dropCloses}</span>
                 </div>
               </div>
               <div className="flex items-start gap-2">
@@ -243,12 +255,11 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
 
           {/* CTA Button */}
           <div className="text-right">
-            <a
-              href={drop.href}
-              className={`inline-block bg-gradient-to-r from-amber-800 to-amber-700 hover:from-amber-900 hover:to-amber-800 text-white font-semibold py-2 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 ${gabrielaClassName}`}
+            <span
+              className={`inline-block bg-gradient-to-r from-amber-800 to-amber-700 text-white font-semibold py-2 px-6 rounded-full shadow-md group-hover:shadow-lg transition-all duration-200 ${gabrielaClassName}`}
             >
               Shop This Drop →
-            </a>
+            </span>
           </div>
         </div>
       </div>
@@ -322,6 +333,6 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
           </div>
         </div>
       )}
-    </div>
+    </a>
   );
 }

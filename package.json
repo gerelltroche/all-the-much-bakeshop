@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "seed": "tsx prisma/scripts/seed.ts"
+    "seed": "tsx prisma/scripts/seed.ts",
+    "migrate-and-seed": "prisma migrate deploy && npm run seed"
   },
   "prisma": {
     "seed": "tsx prisma/scripts/seed.ts"
@@ -21,6 +22,8 @@
     "@prisma/client": "^7.0.0",
     "@react-email/components": "^1.0.1",
     "@react-email/render": "^2.0.0",
+    "@stripe/react-stripe-js": "^5.4.1",
+    "@stripe/stripe-js": "^8.5.3",
     "date-fns": "^4.1.0",
     "next": "16.0.0",
     "prisma": "^7.0.0",
@@ -28,6 +31,7 @@
     "react-dom": "19.2.0",
     "react-hook-form": "^7.66.0",
     "resend": "^6.5.2",
+    "stripe": "^20.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {

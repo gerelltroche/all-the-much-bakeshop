@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Tangerine } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +12,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const tangerine = Tangerine({
-  variable: "--font-tangerine",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "600", "700"],
 });
 
 
@@ -89,7 +89,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${tangerine.variable} antialiased bg-gradient-to-b from-rose-50 to-amber-50`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased bg-gradient-to-b from-rose-50 to-amber-50`}
       >
         {/* Background decorative polka dots */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
