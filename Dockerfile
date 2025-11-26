@@ -1,28 +1,30 @@
 # Multi-stage Dockerfile for Next.js 16 (App Router)
-# Optimized for small production images on Raspberry Pi
+# Uses Debian slim for better native module compatibility (Tailwind v4 oxide binaries)
 
-# Stage 1: Dependencies
-FROM node:22-alpine AS deps
+# Stage 1: Builder
+FROM node:22-slim AS builder
 WORKDIR /app
 
-# Install dependencies only when needed
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production --ignore-scripts
-
-# Stage 2: Builder
-FROM node:22-alpine AS builder
-WORKDIR /app
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-# Install all dependencies (including dev) for building
-RUN npm ci
-
-# Accept DATABASE_URL as build arg for build-time prerendering
+# Accept build args for prisma generate and Next.js build
 ARG DATABASE_URL
+ARG STRIPE_SECRET_KEY=sk_build_placeholder
 ENV DATABASE_URL=${DATABASE_URL}
+ENV STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+
+# Copy package files and prisma config (needed for postinstall: prisma generate)
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma
+COPY prisma.config.ts ./
+
+# Install OpenSSL for Prisma
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+# Delete and regenerate lock file to resolve platform-specific optional deps
+# This is needed because npm has bugs with optional deps across platforms
+RUN rm -f package-lock.json && npm install
+
+# Copy remaining source files
+COPY . .
 
 # Build Next.js app in standalone mode
 # This creates a minimal production server
@@ -30,16 +32,16 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 RUN npm run build
 
-# Stage 3: Runner (Production)
-FROM node:22-alpine AS runner
+# Stage 2: Runner (Production)
+FROM node:22-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 nextjs
 
 # Copy only necessary files from builder
 # Standalone mode bundles everything needed
@@ -47,8 +49,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy Prisma files (standalone mode doesn't include these automatically)
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+# Copy Prisma generated client (Prisma 7 uses custom output path)
+COPY --from=builder --chown=nextjs:nodejs /app/lib/generated/prisma ./lib/generated/prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
 # Create uploads directory for product images

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Gabriela, Tangerine } from 'next/font/google';
+import { Gabriela, Tangerine, Fraunces } from 'next/font/google';
 
 const gabriela = Gabriela({
   weight: '400',
@@ -8,6 +8,11 @@ const gabriela = Gabriela({
 
 const tangerine = Tangerine({
   weight: '700',
+  subsets: ['latin']
+});
+
+const fraunces = Fraunces({
+  weight: '600',
   subsets: ['latin']
 });
 
@@ -60,23 +65,24 @@ export default function LinkTreePage() {
 
         {/* Coming Soon Banner */}
         <a
-          href="/signup"
+          href="/winter-drops"
           className="block mb-6 bg-gradient-to-r from-rose-100 via-pink-100 to-rose-100 rounded-2xl p-6 shadow-md border-2 border-rose-300 relative overflow-hidden hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
         >
-          {/* Coming Soon Ribbon */}
+          {/* Now Open Ribbon */}
           <div className="absolute top-4 -left-10 bg-rose-500 text-white pl-8 pr-12 py-1 -rotate-45 shadow-lg">
-            <span className="text-xs font-bold">COMING SOON</span>
+            <span className="text-xs font-bold ml-2">NOW OPEN!</span>
           </div>
 
           <div className="text-center">
-            <h2 className={`text-4xl font-bold text-rose-900 mb-1 ${tangerine.className}`}>
-              2025-2026 Winter Drops
+            <h2 className={`text-4xl font-bold text-rose-900 mb-1 ${fraunces.className}`}>
+              Winter 2025-26<br />
+              Drop Schedule
             </h2>
             <p className={`text-rose-800 text-sm mb-4 ${gabriela.className}`}>
-              Stay tuned for our next delicious cookie drop!
+              Pre-order your favorite seasonal treats!
             </p>
             <div className="inline-block bg-rose-500 text-white font-semibold py-2 px-6 rounded-full shadow-md">
-              Notify Me 🍪
+              Order Now 🍪
             </div>
           </div>
         </a>
@@ -153,6 +159,24 @@ export default function LinkTreePage() {
               </svg>
             </div>
           </a>
+        </div>
+
+        {/* Notify Me Section */}
+        <div className="mt-8 bg-white rounded-2xl p-6 shadow-md border-2 border-amber-200">
+          <div className="text-center">
+            <h3 className={`text-2xl font-bold text-amber-900 mb-2 ${fraunces.className}`}>
+              Get Notified
+            </h3>
+            <p className={`text-amber-700 text-sm mb-4 ${gabriela.className}`}>
+              Be the first to know when new drops are announced!
+            </p>
+            <a
+              href="/signup"
+              className="inline-block bg-gradient-to-r from-rose-400 to-amber-400 text-white font-semibold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
+            >
+              Sign Up for Updates 📬
+            </a>
+          </div>
         </div>
       </div>
     </div>
