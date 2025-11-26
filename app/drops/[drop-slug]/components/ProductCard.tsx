@@ -41,6 +41,8 @@ export function ProductCard({
 
   const firstMedia = product.photos[0];
   const isFirstMediaVideo = firstMedia && isVideo(firstMedia);
+  // Find first image (non-video) for cart thumbnail
+  const firstImage = product.photos.find((p) => !isVideo(p)) || '';
 
   // Autoplay video when component mounts
   useEffect(() => {
@@ -58,7 +60,7 @@ export function ProductCard({
       name: product.name,
       price,
       quantity: 1,
-      photo: product.photos[0] || '',
+      photo: firstImage,
       uom: product.uom,
     });
     setTimeout(() => setIsAdding(false), 200);
