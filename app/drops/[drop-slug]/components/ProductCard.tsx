@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useOrder } from '../context/OrderContext';
 
@@ -82,11 +82,11 @@ export function ProductCard({
 
   return (
     <div
-      className={`bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden transition-all duration-300 ${
+      className={`h-full flex flex-col bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden transition-all duration-300 ${
         quantity > 0 ? 'ring-2 ring-amber-400 shadow-amber-200/50' : ''
       }`}
     >
-      <div className="flex gap-4 p-4">
+      <div className="flex gap-4 p-4 flex-1">
         {/* Product Media (Image or Video) */}
         {firstMedia && (
           <div className="w-28 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 relative">
@@ -113,17 +113,15 @@ export function ProductCard({
         )}
 
         {/* Product Info */}
-        <div className="flex-1 flex flex-col justify-between">
-          <div>
-            <h3 className={`text-2xl text-amber-900 ${tangerineClassName}`}>
-              {product.name}
-            </h3>
-            {product.description && (
-              <p className={`text-sm text-amber-700 mt-1 line-clamp-2 ${gabrielaClassName}`}>
-                {product.description}
-              </p>
-            )}
-          </div>
+        <div className="flex-1 flex flex-col">
+          <h3 className={`text-2xl text-amber-900 ${tangerineClassName}`}>
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className={`text-sm text-amber-700 mt-1 ${gabrielaClassName}`}>
+              {product.description}
+            </p>
+          )}
 
           <div className="flex items-center justify-between mt-3">
             <div className={`text-amber-800 font-medium ${gabrielaClassName}`}>
@@ -141,7 +139,7 @@ export function ProductCard({
       </div>
 
       {/* Quantity Controls */}
-      <div className="px-4 pb-4">
+      <div className="px-4 pb-4 mt-auto">
         {quantity === 0 ? (
           <button
             onClick={handleAdd}

@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
           '/drops/*/order/confirmation',
           '/thank-you',
           '/unsubscribe',
+          '_next/',
         ],
       },
       // OpenAI crawlers
