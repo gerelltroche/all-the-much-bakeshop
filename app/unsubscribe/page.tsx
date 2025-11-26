@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function UnsubscribePage() {
+function UnsubscribeForm() {
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -146,5 +146,26 @@ export default function UnsubscribePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function UnsubscribePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-lg shadow-xl p-8 text-center">
+            <div className="animate-pulse">
+              <div className="w-16 h-16 bg-amber-100 rounded-full mx-auto mb-4"></div>
+              <div className="h-6 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded w-full mb-6"></div>
+              <div className="h-12 bg-gray-200 rounded w-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <UnsubscribeForm />
+    </Suspense>
   )
 }
