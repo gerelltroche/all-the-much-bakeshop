@@ -14,8 +14,13 @@ const gabriela = Gabriela({
 // Load Stripe outside of component to avoid recreating on every render
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
+interface OrderItem {
+  productId: number;
+  quantity: number;
+}
+
 interface StripePaymentWrapperProps {
-  amount: number;
+  items: OrderItem[];
   customerEmail: string;
   customerName: string;
   dropId: string;
@@ -27,7 +32,7 @@ interface StripePaymentWrapperProps {
 }
 
 export function StripePaymentWrapper({
-  amount,
+  items,
   customerEmail,
   customerName,
   dropId,
@@ -47,11 +52,12 @@ export function StripePaymentWrapper({
     hasCreatedIntent.current = true;
 
     // Create PaymentIntent as soon as the component loads
+    // Server calculates amount from items to prevent price manipulation
     fetch('/api/stripe/create-payment-intent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        amount,
+        items,
         metadata: {
           customerEmail,
           customerName,
@@ -70,7 +76,7 @@ export function StripePaymentWrapper({
         console.error('Error creating payment intent:', err);
         setError('Failed to initialize payment. Please try again.');
       });
-  }, [amount, customerEmail, customerName, dropId]);
+  }, [items, customerEmail, customerName, dropId]);
 
   if (error) {
     return (

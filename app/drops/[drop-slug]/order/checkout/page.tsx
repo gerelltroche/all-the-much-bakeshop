@@ -232,7 +232,10 @@ export default function CheckoutPage() {
           {/* Card Payment Form */}
           {state.customer && (
             <StripePaymentWrapper
-                amount={total}
+                items={state.items.map((item) => ({
+                  productId: item.productId,
+                  quantity: item.quantity,
+                }))}
                 customerEmail={state.customer.email}
                 customerName={state.customer.name}
                 dropId={state.dropId || ''}

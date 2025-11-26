@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { stripe } from '@/lib/stripe';
 
 const orderItemSchema = z.object({
   productId: z.number(),
@@ -65,6 +66,72 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // CRITICAL FIX #1: Verify payment with Stripe before creating order
+    const paymentIntent = await stripe.paymentIntents.retrieve(data.stripePaymentIntentId);
+
+    if (paymentIntent.status !== 'succeeded') {
+      return NextResponse.json(
+        { error: 'Payment has not been completed' },
+        { status: 400 }
+      );
+    }
+
+    // Prevent payment intent reuse - check if this payment was already used for an order
+    const existingPayment = await prisma.payment.findFirst({
+      where: { paymentIntentId: data.stripePaymentIntentId },
+    });
+
+    if (existingPayment) {
+      return NextResponse.json(
+        { error: 'This payment has already been processed' },
+        { status: 400 }
+      );
+    }
+
+    // CRITICAL FIX #3: Verify prices against database
+    const productIds = data.items.map((item) => item.productId);
+    const products = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, price: true },
+    });
+
+    const productPriceMap = new Map(
+      products.map((p) => [p.id, Number(p.price)])
+    );
+
+    // Calculate server-side total from database prices
+    let calculatedTotal = 0;
+    for (const item of data.items) {
+      const dbPrice = productPriceMap.get(item.productId);
+      if (dbPrice === undefined) {
+        return NextResponse.json(
+          { error: `Product ${item.productId} not found` },
+          { status: 400 }
+        );
+      }
+      calculatedTotal += dbPrice * item.quantity;
+    }
+
+    // Round to 2 decimal places to avoid floating point issues
+    calculatedTotal = Math.round(calculatedTotal * 100) / 100;
+
+    // Verify client total matches server calculation
+    if (Math.abs(calculatedTotal - data.totalAmount) > 0.01) {
+      return NextResponse.json(
+        { error: 'Order total does not match calculated price' },
+        { status: 400 }
+      );
+    }
+
+    // Verify payment amount matches order total (Stripe amounts are in cents)
+    const expectedAmountCents = Math.round(calculatedTotal * 100);
+    if (paymentIntent.amount !== expectedAmountCents) {
+      return NextResponse.json(
+        { error: 'Payment amount does not match order total' },
+        { status: 400 }
+      );
+    }
+
     // Find or create customer
     let customer = await prisma.customer.findUnique({
       where: { email: data.customer.email },
@@ -96,18 +163,21 @@ export async function POST(request: NextRequest) {
         deliveryCity: data.fulfillment.city,
         deliveryState: data.fulfillment.state,
         deliveryZip: data.fulfillment.zipCode,
-        totalAmount: data.totalAmount,
+        // Use server-calculated total, not client-submitted
+        totalAmount: calculatedTotal,
         status: 'paid',
         orderItems: {
           create: data.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
-            priceAtOrder: item.priceAtOrder,
+            // Use verified database price, not client-submitted price
+            priceAtOrder: productPriceMap.get(item.productId)!,
           })),
         },
         payments: {
           create: {
-            amount: data.totalAmount,
+            // Use server-calculated total
+            amount: calculatedTotal,
             status: 'succeeded',
             paymentMethod: 'card',
             paymentIntentId: data.stripePaymentIntentId,

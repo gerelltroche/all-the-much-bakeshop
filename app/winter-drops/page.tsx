@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Gabriela, Fraunces } from 'next/font/google';
 import { DropCarousel, Drop } from './DropCarousel';
 
+type OrderType = 'individual' | 'group' | 'business';
+
 const gabriela = Gabriela({
   weight: '400',
   subsets: ['latin']
@@ -25,7 +27,11 @@ const drops: Drop[] = [
     href: '/drops/candy-cane-lane/order',
     borderColor: 'border-rose-200 hover:border-rose-300',
     gradient: 'from-red-400 to-green-400',
-    images: ['/products/candy_cane_lane/dozen.jpg', '/products/candy_cane_lane/half-dozen.jpg'],
+    media: [
+      { type: 'video', src: '/products/candy_cane_lane/greeting-card.mp4' },
+      { type: 'image', src: '/products/candy_cane_lane/dozen.jpg' },
+      { type: 'image', src: '/products/candy_cane_lane/half-dozen.jpg' },
+    ],
     flavor: 'Triple Chocolate Peppermint Bark',
     dropCloses: 'December 7, 2025',
     pickupDate: 'December 21, 2025',
@@ -38,7 +44,11 @@ const drops: Drop[] = [
     href: '/drops/cant-catch-me/order',
     borderColor: 'border-amber-200 hover:border-amber-300',
     gradient: 'from-amber-600 to-amber-400',
-    images: ['/products/cant_catch_me/dozen.jpg', '/products/cant_catch_me/half-dozen.jpg'],
+    media: [
+      { type: 'video', src: '/products/cant_catch_me/greeting-card.mp4' },
+      { type: 'image', src: '/products/cant_catch_me/dozen.jpg' },
+      { type: 'image', src: '/products/cant_catch_me/half-dozen.jpg' },
+    ],
     flavor: 'Gingerbread',
     dropCloses: 'December 14, 2025',
     pickupDate: 'December 28, 2025',
@@ -51,7 +61,11 @@ const drops: Drop[] = [
     href: '/drops/sweater-weather/order',
     borderColor: 'border-rose-200 hover:border-rose-300',
     gradient: 'from-rose-400 to-amber-400',
-    images: ['/products/sweater_weather/dozen.jpg', '/products/sweater_weather/half-dozen.jpg'],
+    media: [
+      { type: 'video', src: '/products/sweater_weather/greeting-card.mp4' },
+      { type: 'image', src: '/products/sweater_weather/dozen.jpg' },
+      { type: 'image', src: '/products/sweater_weather/half-dozen.jpg' },
+    ],
     flavor: 'Apple Pie a La Mode',
     dropCloses: 'December 21, 2025',
     pickupDate: 'January 4, 2026',
@@ -64,7 +78,9 @@ const drops: Drop[] = [
     href: '#',
     borderColor: 'border-rose-200',
     gradient: 'from-blue-500 to-red-500',
-    images: ['/products/superbowl_cookie_preview.jpg'],
+    media: [
+      { type: 'image', src: '/products/superbowl_cookie_preview.jpg' },
+    ],
     flavor: 'TBA',
     dropCloses: 'TBA',
     pickupDate: 'TBA',
@@ -72,7 +88,15 @@ const drops: Drop[] = [
   },
 ];
 
-export default function WinterDropsPage() {
+interface WinterDropsPageProps {
+  searchParams: Promise<{ type?: string }>;
+}
+
+export default async function WinterDropsPage({ searchParams }: WinterDropsPageProps) {
+  const params = await searchParams;
+  const typeParam = params.type;
+  const orderType: OrderType = (typeParam === 'group' || typeParam === 'business') ? typeParam : 'individual';
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-amber-50 py-12 px-4 relative overflow-hidden">
       {/* Background decorative polka dots */}
@@ -114,6 +138,7 @@ export default function WinterDropsPage() {
             <DropCarousel
               key={drop.id}
               drop={drop}
+              orderType={orderType}
               gabrielaClassName={gabriela.className}
               tangerineClassName={fraunces.className}
             />

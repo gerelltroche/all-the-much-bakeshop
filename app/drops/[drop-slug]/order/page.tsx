@@ -106,7 +106,7 @@ export default function ProductSelectionPage() {
       <div className="max-w-4xl mx-auto">
         {/* Back link */}
         <Link
-          href="/winter-drops"
+          href={`/winter-drops?type=${orderType}`}
           className={`inline-flex items-center text-amber-700 hover:text-amber-900 transition-colors mb-6 ${gabriela.className}`}
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

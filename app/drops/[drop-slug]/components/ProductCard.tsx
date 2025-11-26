@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useOrder } from '../context/OrderContext';
 
 interface Product {
@@ -10,6 +10,12 @@ interface Product {
   price: string;
   uom: string;
   photos: string[];
+}
+
+function isVideo(src: string): boolean {
+  return src.toLowerCase().endsWith('.mp4') ||
+         src.toLowerCase().endsWith('.webm') ||
+         src.toLowerCase().endsWith('.mov');
 }
 
 interface ProductCardProps {
@@ -27,10 +33,21 @@ export function ProductCard({
 }: ProductCardProps) {
   const { state, addItem, updateQuantity, removeItem } = useOrder();
   const [isAdding, setIsAdding] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const cartItem = state.items.find((item) => item.productId === product.id);
   const quantity = cartItem?.quantity || 0;
   const price = parseFloat(product.price);
+
+  const firstMedia = product.photos[0];
+  const isFirstMediaVideo = firstMedia && isVideo(firstMedia);
+
+  // Autoplay video when component mounts
+  useEffect(() => {
+    if (isFirstMediaVideo && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [isFirstMediaVideo]);
 
   const handleAdd = () => {
     if (maxQuantity !== null && quantity >= maxQuantity) return;
@@ -67,14 +84,26 @@ export function ProductCard({
       }`}
     >
       <div className="flex gap-4 p-4">
-        {/* Product Image */}
-        {product.photos[0] && (
+        {/* Product Media (Image or Video) */}
+        {firstMedia && (
           <div className="w-28 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100">
-            <img
-              src={product.photos[0]}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
+            {isFirstMediaVideo ? (
+              <video
+                ref={videoRef}
+                src={firstMedia}
+                className="w-full h-full object-cover"
+                muted
+                loop
+                playsInline
+                autoPlay
+              />
+            ) : (
+              <img
+                src={firstMedia}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
         )}
 

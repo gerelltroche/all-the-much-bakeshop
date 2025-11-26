@@ -1,6 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+
+export type MediaType = 'image' | 'video';
+
+export interface MediaItem {
+  type: MediaType;
+  src: string;
+}
 
 export interface Drop {
   id: string;
@@ -9,32 +16,56 @@ export interface Drop {
   href: string;
   borderColor: string;
   gradient: string;
-  images: string[];
+  media: MediaItem[];
   flavor: string;
   dropCloses: string;
   pickupDate: string;
   comingSoon: boolean;
 }
 
+type OrderType = 'individual' | 'group' | 'business';
+
 interface DropCarouselProps {
   drop: Drop;
+  orderType: OrderType;
   gabrielaClassName: string;
   tangerineClassName: string;
 }
 
-export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: DropCarouselProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+export function DropCarousel({ drop, orderType, gabrielaClassName, tangerineClassName }: DropCarouselProps) {
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const lightboxVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Build href with orderType param
+  const dropHref = drop.comingSoon ? '#' : `${drop.href}?type=${orderType}`;
   const [notifyEmail, setNotifyEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % drop.images.length);
+  const currentMedia = drop.media[currentMediaIndex];
+
+  // Handle video autoplay when visible
+  useEffect(() => {
+    if (currentMedia?.type === 'video' && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [currentMediaIndex, currentMedia?.type]);
+
+  // Handle lightbox video autoplay
+  useEffect(() => {
+    if (isLightboxOpen && currentMedia?.type === 'video' && lightboxVideoRef.current) {
+      lightboxVideoRef.current.play().catch(() => {});
+    }
+  }, [isLightboxOpen, currentMediaIndex, currentMedia?.type]);
+
+  const nextMedia = () => {
+    setCurrentMediaIndex((prev) => (prev + 1) % drop.media.length);
   };
 
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + drop.images.length) % drop.images.length);
+  const prevMedia = () => {
+    setCurrentMediaIndex((prev) => (prev - 1 + drop.media.length) % drop.media.length);
   };
 
   const openLightbox = () => {
@@ -84,14 +115,26 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 p-5">
-          {/* Blurred teaser image */}
+          {/* Blurred teaser media */}
           <div className="relative w-full md:w-48 h-48 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-            <img
-              src={drop.images[0]}
-              alt="Coming soon"
-              className="w-full h-full object-cover"
-              style={{ filter: 'blur(4px)' }}
-            />
+            {drop.media[0]?.type === 'video' ? (
+              <video
+                src={drop.media[0].src}
+                className="w-full h-full object-cover"
+                style={{ filter: 'blur(4px)' }}
+                muted
+                loop
+                playsInline
+                autoPlay
+              />
+            ) : (
+              <img
+                src={drop.media[0]?.src}
+                alt="Coming soon"
+                className="w-full h-full object-cover"
+                style={{ filter: 'blur(4px)' }}
+              />
+            )}
             {/* Optional overlay for extra "mystery" effect */}
             <div className="absolute inset-0 bg-white/20" />
           </div>
@@ -159,32 +202,48 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
 
   return (
     <a
-      href={drop.href}
+      href={dropHref}
       className={`block w-full bg-white rounded-2xl shadow-md border-2 ${drop.borderColor} overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer`}
     >
       <div className="flex flex-col md:flex-row gap-4 p-5">
-        {/* Image carousel */}
+        {/* Media carousel */}
         <div className="relative w-full md:w-48 h-48 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-          <img
-            src={drop.images[currentImageIndex]}
-            alt={drop.name}
-            className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
-            onClick={(e) => {
-              e.preventDefault();
-              openLightbox();
-            }}
-          />
+          {currentMedia?.type === 'video' ? (
+            <video
+              ref={videoRef}
+              src={currentMedia.src}
+              className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={(e) => {
+                e.preventDefault();
+                openLightbox();
+              }}
+              muted
+              loop
+              playsInline
+              autoPlay
+            />
+          ) : (
+            <img
+              src={currentMedia?.src}
+              alt={drop.name}
+              className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={(e) => {
+                e.preventDefault();
+                openLightbox();
+              }}
+            />
+          )}
 
-          {drop.images.length > 1 && (
+          {drop.media.length > 1 && (
             <>
               {/* Navigation arrows */}
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  prevImage();
+                  prevMedia();
                 }}
                 className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
-                aria-label="Previous image"
+                aria-label="Previous media"
               >
                 <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -194,23 +253,23 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  nextImage();
+                  nextMedia();
                 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
-                aria-label="Next image"
+                aria-label="Next media"
               >
                 <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
 
-              {/* Image indicator dots */}
+              {/* Media indicator dots */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-                {drop.images.map((_, index) => (
+                {drop.media.map((_, index) => (
                   <div
                     key={index}
                     className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentImageIndex ? 'bg-white w-4' : 'bg-white/50'
+                      index === currentMediaIndex ? 'bg-white w-4' : 'bg-white/50'
                     }`}
                   />
                 ))}
@@ -281,24 +340,36 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
             </svg>
           </button>
 
-          {/* Image container - prevent clicks from closing */}
+          {/* Media container - prevent clicks from closing */}
           <div
             className="relative max-w-4xl max-h-[90vh] w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={drop.images[currentImageIndex]}
-              alt={drop.name}
-              className="w-full h-full object-contain rounded-lg"
-            />
+            {currentMedia?.type === 'video' ? (
+              <video
+                ref={lightboxVideoRef}
+                src={currentMedia.src}
+                className="w-full h-full object-contain rounded-lg"
+                muted
+                loop
+                playsInline
+                autoPlay
+              />
+            ) : (
+              <img
+                src={currentMedia?.src}
+                alt={drop.name}
+                className="w-full h-full object-contain rounded-lg"
+              />
+            )}
 
-            {drop.images.length > 1 && (
+            {drop.media.length > 1 && (
               <>
                 {/* Navigation arrows */}
                 <button
-                  onClick={prevImage}
+                  onClick={prevMedia}
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-3 shadow-2xl transition-all duration-200 hover:scale-110"
-                  aria-label="Previous image"
+                  aria-label="Previous media"
                 >
                   <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -306,25 +377,25 @@ export function DropCarousel({ drop, gabrielaClassName, tangerineClassName }: Dr
                 </button>
 
                 <button
-                  onClick={nextImage}
+                  onClick={nextMedia}
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-3 shadow-2xl transition-all duration-200 hover:scale-110"
-                  aria-label="Next image"
+                  aria-label="Next media"
                 >
                   <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
 
-                {/* Image indicator dots */}
+                {/* Media indicator dots */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                  {drop.images.map((_, index) => (
+                  {drop.media.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCurrentImageIndex(index)}
+                      onClick={() => setCurrentMediaIndex(index)}
                       className={`h-3 rounded-full transition-all ${
-                        index === currentImageIndex ? 'bg-white w-8' : 'bg-white/50 w-3 hover:bg-white/70'
+                        index === currentMediaIndex ? 'bg-white w-8' : 'bg-white/50 w-3 hover:bg-white/70'
                       }`}
-                      aria-label={`Go to image ${index + 1}`}
+                      aria-label={`Go to media ${index + 1}`}
                     />
                   ))}
                 </div>
