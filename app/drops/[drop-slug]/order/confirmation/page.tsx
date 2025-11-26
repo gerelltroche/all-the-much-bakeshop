@@ -223,32 +223,61 @@ export default function ConfirmationPage() {
             What's Next?
           </h2>
 
-          <ol className={`space-y-3 ${gabriela.className}`}>
-            <li className="flex items-start gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
-                1
-              </span>
-              <span className="text-amber-800">
-                Check your email ({order.email}) for order confirmation and payment instructions
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
-                2
-              </span>
-              <span className="text-amber-800">
-                Complete payment via Venmo or prepare cash for pickup
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
-                3
-              </span>
-              <span className="text-amber-800">
-                Pick up your fresh-baked cookies on the scheduled date!
-              </span>
-            </li>
-          </ol>
+          {order.fulfillmentType === 'pickup' ? (
+            <ol className={`space-y-3 ${gabriela.className}`}>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
+                  1
+                </span>
+                <span className="text-amber-800">
+                  Check your email ({order.email}) for your order confirmation
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
+                  2
+                </span>
+                <span className="text-amber-800">
+                  A few days before your pickup date, you'll receive an email with the pickup location and your pickup time window
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
+                  3
+                </span>
+                <span className="text-amber-800">
+                  Pick up your fresh-baked cookies during your scheduled time window!
+                </span>
+              </li>
+            </ol>
+          ) : (
+            <ol className={`space-y-3 ${gabriela.className}`}>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
+                  1
+                </span>
+                <span className="text-amber-800">
+                  Check your email ({order.email}) for your order confirmation
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
+                  2
+                </span>
+                <span className="text-amber-800">
+                  A few days before your delivery date, you'll receive an email with your estimated delivery time window
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-500 text-white text-sm flex items-center justify-center">
+                  3
+                </span>
+                <span className="text-amber-800">
+                  We'll deliver your fresh-baked cookies right to your door!
+                </span>
+              </li>
+            </ol>
+          )}
         </div>
 
         {/* Add to Calendar */}
