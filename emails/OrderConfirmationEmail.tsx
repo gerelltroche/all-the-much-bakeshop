@@ -136,7 +136,7 @@ export function OrderConfirmationEmail({
                 </Column>
               </Row>
               <Text style={timeNote}>
-                I'll send another email closer to the date with the exact pickup
+                I'll send another email closer to the date with the exact pickup location and
                 time window.
               </Text>
             </Section>

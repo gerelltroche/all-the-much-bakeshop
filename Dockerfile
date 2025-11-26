@@ -8,8 +8,10 @@ WORKDIR /app
 # Accept build args for prisma generate and Next.js build
 ARG DATABASE_URL
 ARG STRIPE_SECRET_KEY=sk_build_placeholder
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ENV DATABASE_URL=${DATABASE_URL}
 ENV STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
 
 # Copy package files and prisma config (needed for postinstall: prisma generate)
 COPY package.json package-lock.json* ./

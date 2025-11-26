@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
+import { sendOrderConfirmationEmail, sendKatieOrderNotification } from '@/lib/email';
 
 const orderItemSchema = z.object({
   productId: z.number(),
@@ -201,7 +202,48 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // TODO: Send confirmation email
+    // Send confirmation emails (don't await - let them send in background)
+    const cookiesForEmail = order.orderItems.map((item) => ({
+      name: item.product.name,
+      quantity: item.quantity,
+      price: Number(item.priceAtOrder),
+    }));
+
+    const fulfillmentDetails =
+      data.fulfillment.type === 'pickup'
+        ? drop.pickupLocation || 'Location TBD'
+        : `${data.fulfillment.street}, ${data.fulfillment.city}, ${data.fulfillment.state} ${data.fulfillment.zipCode}`;
+
+    // Send customer confirmation email
+    sendOrderConfirmationEmail(data.customer.email, {
+      orderNumber: order.id,
+      customerName: data.customer.name,
+      cookies: cookiesForEmail,
+      total: calculatedTotal,
+      fulfillmentType: data.fulfillment.type,
+      fulfillmentDetails,
+      fulfillmentDate: drop.pickupDate,
+    }).catch((err) => {
+      console.error('Failed to send customer confirmation email:', err);
+    });
+
+    // Send Katie notification email
+    sendKatieOrderNotification({
+      orderNumber: order.id,
+      customerName: data.customer.name,
+      customerEmail: data.customer.email,
+      customerPhone: data.customer.phone,
+      orderType: data.customer.orderType,
+      businessName: data.customer.businessName,
+      cookies: cookiesForEmail,
+      total: calculatedTotal,
+      fulfillmentType: data.fulfillment.type,
+      fulfillmentDetails,
+      fulfillmentDate: drop.pickupDate,
+      dropName: drop.name,
+    }).catch((err) => {
+      console.error('Failed to send Katie notification email:', err);
+    });
 
     return NextResponse.json({
       success: true,

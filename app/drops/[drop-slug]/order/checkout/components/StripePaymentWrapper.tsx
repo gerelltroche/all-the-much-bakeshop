@@ -12,7 +12,8 @@ const gabriela = Gabriela({
 });
 
 // Load Stripe outside of component to avoid recreating on every render
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 interface OrderItem {
   productId: number;
@@ -77,6 +78,14 @@ export function StripePaymentWrapper({
         setError('Failed to initialize payment. Please try again.');
       });
   }, [items, customerEmail, customerName, dropId]);
+
+  if (!stripePublishableKey) {
+    return (
+      <div className={`p-4 bg-red-50 border-2 border-red-200 rounded-xl ${gabriela.className}`}>
+        <p className="text-red-700">Payment system is not configured. Please contact support at (407) 279-0014.</p>
+      </div>
+    );
+  }
 
   if (error) {
     return (
