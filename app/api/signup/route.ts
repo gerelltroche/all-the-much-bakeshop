@@ -3,16 +3,32 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { getActiveDrop } from '@/lib/drops'
 import { sendWelcomeEmail } from '@/lib/email'
+import {
+  trackSubscribe,
+  buildUserData,
+  getClientIp,
+  getUserAgent,
+  extractTrackingParams,
+} from '@/lib/meta-conversions'
 
 const signupSchema = z.object({
   name: z.string().min(1).min(2).max(100),
   email: z.email(),
+  // Optional tracking params from client
+  event_id: z.string().optional(),
+  fbp: z.string().optional(),
+  fbc: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { name, email } = signupSchema.parse(body)
+
+    // Extract tracking params for Meta CAPI
+    const trackingParams = extractTrackingParams(body)
+    const ipAddress = getClientIp(request)
+    const userAgent = getUserAgent(request)
 
     // Try to get the active drop (winter-2025 is the current slug)
     const activeDrop = await getActiveDrop('winter-2025')
@@ -31,6 +47,22 @@ export async function POST(request: NextRequest) {
       // Send welcome email asynchronously
       sendWelcomeEmail(email, name).catch((error) => {
         console.error('Failed to send welcome email:', error)
+      })
+
+      // Track Subscribe event via Meta CAPI (fire and forget)
+      trackSubscribe({
+        eventId: trackingParams.event_id,
+        eventSourceUrl: request.headers.get('referer') || undefined,
+        userData: buildUserData({
+          email,
+          name,
+          ipAddress,
+          userAgent,
+          fbp: trackingParams.fbp,
+          fbc: trackingParams.fbc,
+        }),
+      }).catch((error) => {
+        console.error('Meta CAPI tracking error:', error)
       })
 
       return NextResponse.json({

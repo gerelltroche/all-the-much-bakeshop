@@ -3,6 +3,13 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
 import { sendOrderConfirmationEmail, sendKatieOrderNotification } from '@/lib/email';
+import {
+  trackPurchase,
+  buildUserData,
+  getClientIp,
+  getUserAgent,
+  extractTrackingParams,
+} from '@/lib/meta-conversions';
 
 const orderItemSchema = z.object({
   productId: z.number(),
@@ -35,12 +42,21 @@ const createOrderSchema = z.object({
   paymentMethod: z.literal('card'),
   totalAmount: z.number(),
   stripePaymentIntentId: z.string(), // Required for card payments
+  // Optional tracking params from client
+  event_id: z.string().optional(),
+  fbp: z.string().optional(),
+  fbc: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const data = createOrderSchema.parse(body);
+
+    // Extract tracking params for Meta CAPI
+    const trackingParams = extractTrackingParams(body);
+    const ipAddress = getClientIp(request);
+    const userAgent = getUserAgent(request);
 
     // Verify drop exists and is open
     const drop = await prisma.drop.findUnique({
@@ -243,6 +259,31 @@ export async function POST(request: NextRequest) {
       dropName: drop.name,
     }).catch((err) => {
       console.error('Failed to send Katie notification email:', err);
+    });
+
+    // Track Purchase event via Meta CAPI (fire and forget)
+    trackPurchase({
+      eventId: trackingParams.event_id,
+      eventSourceUrl: request.headers.get('referer') || undefined,
+      userData: buildUserData({
+        email: data.customer.email,
+        phone: data.customer.phone,
+        name: data.customer.name,
+        ipAddress,
+        userAgent,
+        fbp: trackingParams.fbp,
+        fbc: trackingParams.fbc,
+      }),
+      customData: {
+        value: calculatedTotal,
+        currency: 'USD',
+        content_ids: data.items.map(item => String(item.productId)),
+        content_type: 'product',
+        num_items: totalCookiesOrdered,
+        order_id: String(order.id),
+      },
+    }).catch((error) => {
+      console.error('Meta CAPI tracking error:', error);
     });
 
     return NextResponse.json({

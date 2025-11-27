@@ -4,6 +4,11 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import {
+  generateEventId,
+  getTrackingParams,
+  trackSubscribePixel,
+} from '@/lib/meta-pixel-client'
 
 const emailSignupSchema = z.object({
   name: z.string()
@@ -35,13 +40,23 @@ export function EmailSignupForm() {
     setIsSubmitting(true)
     setSubmitStatus(null)
 
+    // Generate event_id for deduplication and get tracking params
+    const eventId = generateEventId()
+    const trackingParams = getTrackingParams(eventId)
+
+    // Fire browser pixel event
+    trackSubscribePixel(eventId)
+
     try {
       const response = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          ...trackingParams,
+        }),
       })
 
       const result = await response.json()

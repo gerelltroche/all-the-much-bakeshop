@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import type { OrderType } from '../context/OrderContext';
 import { Gabriela, Fraunces } from 'next/font/google';
@@ -9,6 +9,7 @@ import { useOrder } from '../context/OrderContext';
 import { ProgressStepper } from '../components/ProgressStepper';
 import { ProductCard } from '../components/ProductCard';
 import { CartSummary } from '../components/CartSummary';
+import { generateEventId, trackViewContentPixel } from '@/lib/meta-pixel-client';
 
 const gabriela = Gabriela({
   weight: '400',
@@ -51,8 +52,22 @@ export default function ProductSelectionPage() {
   const { state, dispatch, addItem, getTotal, getTotalItems } = useOrder();
   const [drop, setDrop] = useState<Drop | null>(null);
   const [loading, setLoading] = useState(true);
+  const viewContentTracked = useRef(false);
 
   console.log('orderType', orderType);
+
+  // Track ViewContent when drop data loads
+  useEffect(() => {
+    if (drop && !viewContentTracked.current) {
+      viewContentTracked.current = true;
+      const eventId = generateEventId();
+      trackViewContentPixel(eventId, {
+        content_name: drop.name,
+        content_ids: drop.dropProducts.map(dp => String(dp.product.id)),
+        content_type: 'product_group',
+      });
+    }
+  }, [drop]);
 
   useEffect(() => {
     async function fetchDrop() {

@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useReducer, ReactNode } from 'react';
+import { generateEventId, trackAddToCartPixel } from '@/lib/meta-pixel-client';
 
 // Types
 export interface CartItem {
@@ -141,6 +142,17 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
   const addItem = (item: CartItem) => {
     dispatch({ type: 'ADD_ITEM', item });
+
+    // Track AddToCart event (browser-only)
+    const eventId = generateEventId();
+    trackAddToCartPixel(eventId, {
+      content_name: item.name,
+      content_ids: [String(item.productId)],
+      content_type: 'product',
+      value: item.price * item.quantity,
+      currency: 'USD',
+      num_items: item.quantity,
+    });
   };
 
   const removeItem = (productId: number) => {

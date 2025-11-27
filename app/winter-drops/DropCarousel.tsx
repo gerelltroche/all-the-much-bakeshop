@@ -2,6 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import {
+  generateEventId,
+  getTrackingParams,
+  trackSubscribePixel,
+} from '@/lib/meta-pixel-client';
 
 export type MediaType = 'image' | 'video';
 
@@ -82,6 +87,13 @@ export function DropCarousel({ drop, orderType, gabrielaClassName, tangerineClas
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
+    // Generate event_id for deduplication and get tracking params
+    const eventId = generateEventId();
+    const trackingParams = getTrackingParams(eventId);
+
+    // Fire browser pixel event
+    trackSubscribePixel(eventId);
+
     try {
       const response = await fetch('/api/notify-me', {
         method: 'POST',
@@ -91,6 +103,7 @@ export function DropCarousel({ drop, orderType, gabrielaClassName, tangerineClas
         body: JSON.stringify({
           email: notifyEmail,
           dropId: drop.id,
+          ...trackingParams,
         }),
       });
 

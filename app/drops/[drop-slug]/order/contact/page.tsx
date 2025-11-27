@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Gabriela, Fraunces } from 'next/font/google';
 import Link from 'next/link';
 import { useOrder } from '../../context/OrderContext';
 import { ProgressStepper } from '../../components/ProgressStepper';
+import { generateEventId, trackInitiateCheckoutPixel } from '@/lib/meta-pixel-client';
 
 const gabriela = Gabriela({
   weight: '400',
@@ -30,6 +31,7 @@ export default function CustomerDetailsPage() {
   const router = useRouter();
   const dropSlug = params['drop-slug'] as string;
   const { state, dispatch, getTotal, getTotalItems } = useOrder();
+  const initiateCheckoutTracked = useRef(false);
 
   // Drop data for pickup/delivery dates
   const [dropData, setDropData] = useState<DropData | null>(null);
@@ -40,6 +42,21 @@ export default function CustomerDetailsPage() {
       router.push(`/drops/${dropSlug}/order`);
     }
   }, [getTotalItems, dropSlug, router]);
+
+  // Track InitiateCheckout when page loads
+  useEffect(() => {
+    if (!initiateCheckoutTracked.current && getTotalItems() > 0) {
+      initiateCheckoutTracked.current = true;
+      const eventId = generateEventId();
+      const total = getTotal();
+      trackInitiateCheckoutPixel(eventId, {
+        value: total,
+        currency: 'USD',
+        num_items: getTotalItems(),
+        content_ids: state.items.map(item => String(item.productId)),
+      });
+    }
+  }, [getTotalItems, getTotal, state.items]);
 
   // Fetch drop data for dates
   useEffect(() => {

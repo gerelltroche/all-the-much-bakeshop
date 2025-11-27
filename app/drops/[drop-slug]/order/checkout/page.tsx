@@ -8,6 +8,11 @@ import Link from 'next/link';
 import { useOrder } from '../../context/OrderContext';
 import { ProgressStepper } from '../../components/ProgressStepper';
 import { StripePaymentWrapper } from './components/StripePaymentWrapper';
+import {
+  generateEventId,
+  getTrackingParams,
+  trackAddPaymentInfoPixel,
+} from '@/lib/meta-pixel-client';
 
 const gabriela = Gabriela({
   weight: '400',
@@ -32,6 +37,11 @@ export default function CheckoutPage() {
   // Ref for triggering Stripe form submission
   const stripeSubmitRef = useRef<(() => Promise<void>) | null>(null);
 
+  // Tracking refs
+  const addPaymentInfoTracked = useRef(false);
+  const purchaseEventId = useRef(generateEventId());
+  const trackingParams = useRef(getTrackingParams(purchaseEventId.current));
+
   // Redirect if no items or no customer details
   useEffect(() => {
     if (getTotalItems() === 0) {
@@ -41,11 +51,24 @@ export default function CheckoutPage() {
     }
   }, [getTotalItems, state.customer, dropSlug, router]);
 
+  // Track AddPaymentInfo when page loads (user has entered contact details)
+  useEffect(() => {
+    if (!addPaymentInfoTracked.current && state.customer && getTotalItems() > 0) {
+      addPaymentInfoTracked.current = true;
+      const eventId = generateEventId();
+      trackAddPaymentInfoPixel(eventId, {
+        value: getTotal(),
+        currency: 'USD',
+        content_ids: state.items.map(item => String(item.productId)),
+      });
+    }
+  }, [state.customer, getTotalItems, getTotal, state.items]);
+
   const subtotal = getTotal();
   const total = subtotal;
 
   const handleStripePaymentSuccess = async (paymentIntentId: string) => {
-    // Submit order with payment info
+    // Submit order with payment info and tracking data
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -62,6 +85,8 @@ export default function CheckoutPage() {
           paymentMethod: 'card',
           totalAmount: total,
           stripePaymentIntentId: paymentIntentId,
+          // Meta tracking params for Purchase event
+          ...trackingParams.current,
         }),
       });
 
@@ -71,8 +96,8 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to submit order');
       }
 
-      // Redirect to confirmation
-      router.push(`/drops/${dropSlug}/order/confirmation?orderId=${data.orderId}`);
+      // Redirect to confirmation with tracking event_id
+      router.push(`/drops/${dropSlug}/order/confirmation?orderId=${data.orderId}&eventId=${purchaseEventId.current}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to complete order');
       setIsSubmitting(false);

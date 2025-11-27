@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Gabriela, Fraunces } from 'next/font/google';
 import Link from 'next/link';
 import { useOrder } from '../../context/OrderContext';
+import { trackPurchasePixel, generateEventId } from '@/lib/meta-pixel-client';
 
 const gabriela = Gabriela({
   weight: '400',
@@ -41,11 +42,13 @@ export default function ConfirmationPage() {
   const searchParams = useSearchParams();
   const dropSlug = params['drop-slug'] as string;
   const orderId = searchParams.get('orderId');
+  const eventId = searchParams.get('eventId');
   const { dispatch } = useOrder();
 
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const purchaseTracked = useRef(false);
 
   useEffect(() => {
     // Clear the order context after successful order
@@ -77,6 +80,26 @@ export default function ConfirmationPage() {
 
     fetchOrder();
   }, [orderId]);
+
+  // Track Purchase event in browser (deduplicates with server-side via eventId)
+  useEffect(() => {
+    if (order && !purchaseTracked.current) {
+      purchaseTracked.current = true;
+      // Use eventId from URL if available, otherwise generate new one
+      const trackingEventId = eventId || generateEventId();
+      const totalValue = parseFloat(order.totalAmount);
+      const numItems = order.orderItems.reduce((sum, item) => sum + item.quantity, 0);
+
+      trackPurchasePixel(trackingEventId, {
+        value: totalValue,
+        currency: 'USD',
+        content_ids: order.orderItems.map((_, i) => String(i)), // We don't have product IDs in the response
+        content_type: 'product',
+        num_items: numItems,
+        order_id: String(order.id),
+      });
+    }
+  }, [order, eventId]);
 
   if (loading) {
     return (
