@@ -72,8 +72,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'This drop is not currently accepting orders' }, { status: 400 });
     }
 
-    // Check cookie availability
-    const totalCookiesOrdered = data.items.reduce((sum, item) => sum + item.quantity, 0);
+    // Fetch products to get cookieCount for availability check
+    const productIds = data.items.map((item) => item.productId);
+    const products = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, price: true, cookieCount: true },
+    });
+
+    const productPriceMap = new Map(
+      products.map((p) => [p.id, Number(p.price)])
+    );
+
+    const productCookieMap = new Map(
+      products.map((p) => [p.id, p.cookieCount])
+    );
+
+    // Check cookie availability (using actual cookie counts per product)
+    const totalCookiesOrdered = data.items.reduce(
+      (sum, item) => sum + (item.quantity * (productCookieMap.get(item.productId) || 1)),
+      0
+    );
     const remainingCookies = drop.maxCookies - drop.currentCookies;
 
     if (totalCookiesOrdered > remainingCookies) {
@@ -104,17 +122,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // CRITICAL FIX #3: Verify prices against database
-    const productIds = data.items.map((item) => item.productId);
-    const products = await prisma.product.findMany({
-      where: { id: { in: productIds } },
-      select: { id: true, price: true },
-    });
-
-    const productPriceMap = new Map(
-      products.map((p) => [p.id, Number(p.price)])
-    );
 
     // Calculate server-side total from database prices
     let calculatedTotal = 0;

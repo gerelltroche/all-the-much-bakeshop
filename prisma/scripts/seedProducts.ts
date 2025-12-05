@@ -9,18 +9,20 @@ export default async function seedProducts() {
     where: { sku: 'CCL-CARD' },
     update: {
       name: 'Candy Cane Lane - Greeting Card',
-      description: "Elevate your gifting with this Triple Chocolate Peppermint Bark mug cookie, rimmed with crushed candy and Ghirardelli chocolate. We’ve handled the wrapping by placing it in a 5\"x5\" box with a bow and a complimentary card and envelope, making it the ultimate ready-to-give treat.",
+      description: "Elevate your gifting with this Triple Chocolate Peppermint Bark mug cookie, rimmed with crushed candy and Ghirardelli chocolate. We've handled the wrapping by placing it in a 5\"x5\" box with a bow and a complimentary card and envelope, making it the ultimate ready-to-give treat.",
       price: 10.00,
       uom: 'edible card',
       photos: ['/products/candy_cane_lane/greeting-card.mp4'],
+      cookieCount: 1,
     },
     create: {
       name: 'Candy Cane Lane - Greeting Card',
-      description: "Elevate your gifting with this Triple Chocolate Peppermint Bark mug cookie, rimmed with crushed candy and Ghirardelli chocolate. We’ve handled the wrapping by placing it in a 5\"x5\" box with a bow and a complimentary card and envelope, making it the ultimate ready-to-give treat.",
+      description: "Elevate your gifting with this Triple Chocolate Peppermint Bark mug cookie, rimmed with crushed candy and Ghirardelli chocolate. We've handled the wrapping by placing it in a 5\"x5\" box with a bow and a complimentary card and envelope, making it the ultimate ready-to-give treat.",
       price: 10.00,
       uom: 'edible card',
       sku: 'CCL-CARD',
       photos: ['/products/candy_cane_lane/greeting-card.mp4'],
+      cookieCount: 1,
     },
   })
 
@@ -32,6 +34,7 @@ export default async function seedProducts() {
       price: 25.00,
       uom: 'box',
       photos: ['/products/candy_cane_lane/half-dozen.jpg'],
+      cookieCount: 6,
     },
     create: {
       name: 'Candy Cane Lane - Half Dozen',
@@ -40,6 +43,7 @@ export default async function seedProducts() {
       uom: 'box',
       sku: 'CCL-6',
       photos: ['/products/candy_cane_lane/half-dozen.jpg'],
+      cookieCount: 6,
     },
   })
 
@@ -51,6 +55,7 @@ export default async function seedProducts() {
       price: 50.00,
       uom: 'box',
       photos: ['/products/candy_cane_lane/dozen.jpg'],
+      cookieCount: 12,
     },
     create: {
       name: 'Candy Cane Lane - Dozen',
@@ -59,6 +64,7 @@ export default async function seedProducts() {
       uom: 'box',
       sku: 'CCL-12',
       photos: ['/products/candy_cane_lane/dozen.jpg'],
+      cookieCount: 12,
     },
   })
 
@@ -67,18 +73,20 @@ export default async function seedProducts() {
     where: { sku: 'CCM-CARD' },
     update: {
       name: "Can't Catch Me - Greeting Card",
-      description: "Enjoy the warmth of the season with our traditional gingerbread mug cookie, perfectly decorated with a smiling gingerbread friend. We’ve handled the wrapping by placing it in a 5\"x5\" box with a bow and a complimentary card and envelope, making it the ultimate ready-to-give treat. ",
+      description: "Enjoy the warmth of the season with our traditional gingerbread mug cookie, perfectly decorated with a smiling gingerbread friend. We've handled the wrapping by placing it in a 5\"x5\" box with a bow and a complimentary card and envelope, making it the ultimate ready-to-give treat. ",
       price: 10.00,
       uom: 'edible card',
       photos: ['/products/cant_catch_me/greeting-card.mp4'],
+      cookieCount: 1,
     },
     create: {
       name: "Can't Catch Me - Greeting Card",
-      description: "Enjoy the warmth of the season with our traditional gingerbread mug cookie, perfectly decorated with a smiling gingerbread friend. We’ve handled the wrapping by placing it in a 5\"x5\" box with a bow and a complimentary card and envelope, making it the ultimate ready-to-give treat. ",
+      description: "Enjoy the warmth of the season with our traditional gingerbread mug cookie, perfectly decorated with a smiling gingerbread friend. We've handled the wrapping by placing it in a 5\"x5\" box with a bow and a complimentary card and envelope, making it the ultimate ready-to-give treat. ",
       price: 10.00,
       uom: 'edible card',
       sku: 'CCM-CARD',
       photos: ['/products/cant_catch_me/greeting-card.mp4'],
+      cookieCount: 1,
     },
   })
 
@@ -90,6 +98,7 @@ export default async function seedProducts() {
       price: 25.00,
       uom: 'box',
       photos: ['/products/cant_catch_me/half-dozen.jpg'],
+      cookieCount: 6,
     },
     create: {
       name: "Can't Catch Me - Half Dozen",
@@ -98,6 +107,7 @@ export default async function seedProducts() {
       uom: 'box',
       sku: 'CCM-6',
       photos: ['/products/cant_catch_me/half-dozen.jpg'],
+      cookieCount: 6,
     },
   })
 
@@ -109,6 +119,7 @@ export default async function seedProducts() {
       price: 50.00,
       uom: 'box',
       photos: ['/products/cant_catch_me/dozen.jpg'],
+      cookieCount: 12,
     },
     create: {
       name: "Can't Catch Me - Dozen",
@@ -117,6 +128,7 @@ export default async function seedProducts() {
       uom: 'box',
       sku: 'CCM-12',
       photos: ['/products/cant_catch_me/dozen.jpg'],
+      cookieCount: 12,
     },
   })
 
@@ -129,6 +141,7 @@ export default async function seedProducts() {
       price: 12.00,
       uom: 'edible card',
       photos: ['/products/sweater_weather/greeting-card.mp4'],
+      cookieCount: 1,
     },
     create: {
       name: 'Sweater Weather - Greeting Card',
@@ -137,6 +150,7 @@ export default async function seedProducts() {
       uom: 'edible card',
       sku: 'SW-CARD',
       photos: ['/products/sweater_weather/greeting-card.mp4'],
+      cookieCount: 1,
     },
   })
 
@@ -148,6 +162,7 @@ export default async function seedProducts() {
       price: 30.00,
       uom: 'box',
       photos: ['/products/sweater_weather/half-dozen.jpg'],
+      cookieCount: 6,
     },
     create: {
       name: 'Sweater Weather - Half Dozen',
@@ -156,6 +171,7 @@ export default async function seedProducts() {
       uom: 'box',
       sku: 'SW-6',
       photos: ['/products/sweater_weather/half-dozen.jpg'],
+      cookieCount: 6,
     },
   })
 
@@ -167,6 +183,7 @@ export default async function seedProducts() {
       price: 60.00,
       uom: 'box',
       photos: ['/products/sweater_weather/dozen.jpg'],
+      cookieCount: 12,
     },
     create: {
       name: 'Sweater Weather - Dozen',
@@ -175,6 +192,7 @@ export default async function seedProducts() {
       uom: 'box',
       sku: 'SW-12',
       photos: ['/products/sweater_weather/dozen.jpg'],
+      cookieCount: 12,
     },
   })
 

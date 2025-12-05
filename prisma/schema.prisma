@@ -21,6 +21,7 @@ model Product {
   uom         String
   sku         String   @unique
   photos      String[]
+  cookieCount Int      @default(1)
 
   orderItems  OrderItem[]
   dropProducts DropProduct[]

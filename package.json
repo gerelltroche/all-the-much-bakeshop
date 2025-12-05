@@ -10,6 +10,7 @@
     "postinstall": "prisma generate",
     "seed": "tsx prisma/scripts/seed.ts",
     "migrate-and-seed": "prisma migrate deploy && npm run seed",
+    "recalculate-cookies": "tsx prisma/scripts/recalculateDropCookies.ts",
     "email": "email dev -p 3001 --dir emails"
   },
   "prisma": {
