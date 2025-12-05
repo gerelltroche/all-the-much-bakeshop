@@ -31,7 +31,7 @@ export default async function seedDrops() {
       pickupLocation: 'Alafaya Trail - Orlando, FL',
       cutoffDate: new Date('2025-12-07T23:59:59Z'),
       isActive: true,
-      maxCookies: 72,
+      maxCookies: 72 - 24, // Pre-allocate 24 cookies for Katie
     },
     create: {
       name: 'Candy Cane Lane',
@@ -45,7 +45,7 @@ export default async function seedDrops() {
       pickupLocation: 'Alafaya Trail - Orlando, FL',
       cutoffDate: new Date('2025-12-07T23:59:59Z'),
       isActive: true,
-      maxCookies: 72,
+      maxCookies: 72 - 24, // Pre-allocate 24 cookies for Katie
       currentCookies: 0,
     },
   })
