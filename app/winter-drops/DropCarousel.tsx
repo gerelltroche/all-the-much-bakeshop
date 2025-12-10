@@ -27,6 +27,8 @@ export interface Drop {
   dropCloses: string;
   pickupDate: string;
   comingSoon: boolean;
+  isClosed: boolean;
+  dropOpens: Date;
 }
 
 type OrderType = 'individual' | 'group' | 'business';
@@ -216,6 +218,194 @@ export function DropCarousel({ drop, orderType, gabrielaClassName, tangerineClas
     );
   }
 
+  // Closed drop - past cutoff date
+  if (drop.isClosed) {
+    return (
+      <div className={`block w-full bg-white rounded-2xl shadow-md border-2 border-slate-200 relative overflow-hidden`}>
+        {/* Order Closed Ribbon */}
+        <div className="absolute top-4 -left-10 bg-slate-600 text-white pl-8 pr-12 py-1 -rotate-45 shadow-lg z-10">
+          <span className="text-xs font-bold">ORDER CLOSED</span>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4 p-5">
+          {/* Media with grayscale effect */}
+          <div className="relative w-full md:w-48 h-48 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 grayscale-[30%] opacity-80">
+            {currentMedia?.type === 'video' ? (
+              <video
+                ref={videoRef}
+                src={currentMedia.src}
+                className="w-full h-full object-cover cursor-pointer"
+                onClick={openLightbox}
+                muted
+                loop
+                playsInline
+                autoPlay
+              />
+            ) : (
+              <Image
+                src={currentMedia?.src || ''}
+                alt={drop.name}
+                fill
+                className="object-cover cursor-pointer"
+                onClick={openLightbox}
+                sizes="(max-width: 768px) 100vw, 192px"
+              />
+            )}
+
+            {drop.media.length > 1 && (
+              <>
+                {/* Navigation arrows */}
+                <button
+                  onClick={prevMedia}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
+                  aria-label="Previous media"
+                >
+                  <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={nextMedia}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
+                  aria-label="Next media"
+                >
+                  <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                {/* Media indicator dots */}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {drop.media.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === currentMediaIndex ? 'bg-white w-4' : 'bg-white/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 flex flex-col gap-3 justify-between">
+            <div className="flex flex-col gap-3">
+              <div>
+                <div className={`text-4xl font-bold text-slate-700 ${tangerineClassName}`}>
+                  {drop.flavor}
+                </div>
+                <div className={`text-md text-slate-600 ${gabrielaClassName}`}>
+                  {drop.name}
+                </div>
+              </div>
+
+              <div className={`flex gap-6 text-slate-600 ${gabrielaClassName}`}>
+                <div className="flex items-start gap-2">
+                  <svg className="w-5 h-5 text-slate-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <div className="flex flex-col">
+                    <span className="text-sm">Pickup:</span>
+                    <span className="font-bold text-base">{drop.pickupDate}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* No CTA button for closed drops */}
+          </div>
+        </div>
+
+        {/* Lightbox Modal */}
+        {isLightboxOpen && (
+          <div
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            onClick={closeLightbox}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeLightbox}
+              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-all duration-200 hover:scale-110 z-10"
+              aria-label="Close lightbox"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Media container - prevent clicks from closing */}
+            <div
+              className="relative max-w-4xl max-h-[90vh] w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {currentMedia?.type === 'video' ? (
+                <video
+                  ref={lightboxVideoRef}
+                  src={currentMedia.src}
+                  className="w-full h-full object-contain rounded-lg"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                />
+              ) : (
+                <Image
+                  src={currentMedia?.src || ''}
+                  alt={drop.name}
+                  fill
+                  className="object-contain rounded-lg"
+                  sizes="(max-width: 768px) 100vw, 896px"
+                />
+              )}
+
+              {drop.media.length > 1 && (
+                <>
+                  {/* Navigation arrows */}
+                  <button
+                    onClick={prevMedia}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-3 shadow-2xl transition-all duration-200 hover:scale-110"
+                    aria-label="Previous media"
+                  >
+                    <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={nextMedia}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-3 shadow-2xl transition-all duration-200 hover:scale-110"
+                    aria-label="Next media"
+                  >
+                    <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  {/* Media indicator dots */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {drop.media.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentMediaIndex(index)}
+                        className={`h-3 rounded-full transition-all ${
+                          index === currentMediaIndex ? 'bg-white w-8' : 'bg-white/50 w-3 hover:bg-white/70'
+                        }`}
+                        aria-label={`Go to media ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <a
       href={dropHref}
@@ -301,10 +491,10 @@ export function DropCarousel({ drop, orderType, gabrielaClassName, tangerineClas
           <div className="flex flex-col gap-3">
             <div>
               <div className={`text-4xl font-bold text-amber-900 ${tangerineClassName}`}>
-                {drop.name}
+                {drop.flavor}
               </div>
               <div className={`text-md text-amber-700 ${gabrielaClassName}`}>
-                {drop.flavor}
+                {drop.name}
               </div>
             </div>
 

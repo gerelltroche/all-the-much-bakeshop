@@ -1,8 +1,72 @@
 import type { Metadata } from 'next';
 import { Gabriela, Fraunces } from 'next/font/google';
-import { DropCarousel, Drop } from './DropCarousel';
+import { DropCarousel, Drop, MediaItem } from './DropCarousel';
+import { getDropsWithStatus } from './actions';
 
 type OrderType = 'individual' | 'group' | 'business';
+
+// UI-specific data that doesn't live in the database
+interface DropUIData {
+  emoji: string;
+  borderColor: string;
+  gradient: string;
+  media: MediaItem[];
+  flavor: string;
+}
+
+const dropUIData: Record<string, DropUIData> = {
+  'candy-cane-lane': {
+    emoji: '🍭',
+    borderColor: 'border-rose-200 hover:border-rose-300',
+    gradient: 'from-red-400 to-green-400',
+    media: [
+      { type: 'video', src: '/products/candy_cane_lane/greeting-card.mp4' },
+      { type: 'image', src: '/products/candy_cane_lane/dozen.jpg' },
+      { type: 'image', src: '/products/candy_cane_lane/half-dozen.jpg' },
+    ],
+    flavor: 'Triple Chocolate Peppermint Bark',
+  },
+  'cant-catch-me': {
+    emoji: '🧑‍🍳',
+    borderColor: 'border-amber-200 hover:border-amber-300',
+    gradient: 'from-amber-600 to-amber-400',
+    media: [
+      { type: 'video', src: '/products/cant_catch_me/greeting-card.mp4' },
+      { type: 'image', src: '/products/cant_catch_me/dozen.jpg' },
+      { type: 'image', src: '/products/cant_catch_me/half-dozen.jpg' },
+    ],
+    flavor: 'Gingerbread',
+  },
+  'sweater-weather': {
+    emoji: '🥧',
+    borderColor: 'border-rose-200 hover:border-rose-300',
+    gradient: 'from-rose-400 to-amber-400',
+    media: [
+      { type: 'video', src: '/products/sweater_weather/greeting-card.mp4' },
+      { type: 'image', src: '/products/sweater_weather/dozen.jpg' },
+      { type: 'image', src: '/products/sweater_weather/half-dozen.jpg' },
+    ],
+    flavor: 'Apple Pie a La Mode',
+  },
+  'superbowl': {
+    emoji: '🏈',
+    borderColor: 'border-rose-200',
+    gradient: 'from-blue-500 to-red-500',
+    media: [
+      { type: 'image', src: '/products/superbowl_cookie_preview.jpg' },
+    ],
+    flavor: 'TBA',
+  },
+};
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
 
 const gabriela = Gabriela({
   weight: '400',
@@ -19,75 +83,6 @@ export const metadata: Metadata = {
   description: 'Order from our Winter 2025-26 drop schedule',
 };
 
-const drops: Drop[] = [
-  {
-    id: 'candy-cane-lane',
-    name: 'Candy Cane Lane',
-    emoji: '🍭',
-    href: '/drops/candy-cane-lane/order',
-    borderColor: 'border-rose-200 hover:border-rose-300',
-    gradient: 'from-red-400 to-green-400',
-    media: [
-      { type: 'video', src: '/products/candy_cane_lane/greeting-card.mp4' },
-      { type: 'image', src: '/products/candy_cane_lane/dozen.jpg' },
-      { type: 'image', src: '/products/candy_cane_lane/half-dozen.jpg' },
-    ],
-    flavor: 'Triple Chocolate Peppermint Bark',
-    dropCloses: 'December 7, 2025',
-    pickupDate: 'December 21, 2025',
-    comingSoon: false,
-  },
-  {
-    id: 'cant-catch-me',
-    name: "Can't Catch Me",
-    emoji: '🧑‍🍳',
-    href: '/drops/cant-catch-me/order',
-    borderColor: 'border-amber-200 hover:border-amber-300',
-    gradient: 'from-amber-600 to-amber-400',
-    media: [
-      { type: 'video', src: '/products/cant_catch_me/greeting-card.mp4' },
-      { type: 'image', src: '/products/cant_catch_me/dozen.jpg' },
-      { type: 'image', src: '/products/cant_catch_me/half-dozen.jpg' },
-    ],
-    flavor: 'Gingerbread',
-    dropCloses: 'December 14, 2025',
-    pickupDate: 'December 28, 2025',
-    comingSoon: false,
-  },
-  {
-    id: 'sweater-weather',
-    name: 'Sweater Weather',
-    emoji: '🥧',
-    href: '/drops/sweater-weather/order',
-    borderColor: 'border-rose-200 hover:border-rose-300',
-    gradient: 'from-rose-400 to-amber-400',
-    media: [
-      { type: 'video', src: '/products/sweater_weather/greeting-card.mp4' },
-      { type: 'image', src: '/products/sweater_weather/dozen.jpg' },
-      { type: 'image', src: '/products/sweater_weather/half-dozen.jpg' },
-    ],
-    flavor: 'Apple Pie a La Mode',
-    dropCloses: 'December 21, 2025',
-    pickupDate: 'January 4, 2026',
-    comingSoon: false,
-  },
-  {
-    id: 'superbowl',
-    name: 'Superbowl Drop',
-    emoji: '🏈',
-    href: '#',
-    borderColor: 'border-rose-200',
-    gradient: 'from-blue-500 to-red-500',
-    media: [
-      { type: 'image', src: '/products/superbowl_cookie_preview.jpg' },
-    ],
-    flavor: 'TBA',
-    dropCloses: 'TBA',
-    pickupDate: 'TBA',
-    comingSoon: true,
-  },
-];
-
 interface WinterDropsPageProps {
   searchParams: Promise<{ type?: string }>;
 }
@@ -96,6 +91,41 @@ export default async function WinterDropsPage({ searchParams }: WinterDropsPageP
   const params = await searchParams;
   const typeParam = params.type;
   const orderType: OrderType = (typeParam === 'group' || typeParam === 'business') ? typeParam : 'individual';
+
+  // Fetch drops from database and merge with UI data
+  const dbDrops = await getDropsWithStatus();
+  const drops: Drop[] = dbDrops
+    .filter(dbDrop => dropUIData[dbDrop.slug]) // Only show drops we have UI data for
+    .map(dbDrop => {
+      const uiData = dropUIData[dbDrop.slug];
+      return {
+        id: dbDrop.slug,
+        name: dbDrop.name,
+        emoji: uiData.emoji,
+        href: `/drops/${dbDrop.slug}/order`,
+        borderColor: uiData.borderColor,
+        gradient: uiData.gradient,
+        media: uiData.media,
+        flavor: uiData.flavor,
+        dropCloses: dbDrop.isComingSoon ? 'TBA' : formatDate(dbDrop.cutoffDate),
+        pickupDate: dbDrop.isComingSoon ? 'TBA' : formatDate(dbDrop.pickupDate),
+        comingSoon: dbDrop.isComingSoon,
+        isClosed: dbDrop.isClosed,
+        dropOpens: dbDrop.dropOpens,
+      };
+    })
+    .sort((a, b) => {
+      // Priority: open drops first, then closed, then coming soon
+      const getPriority = (drop: Drop) => {
+        if (drop.comingSoon) return 2; // Coming soon at bottom
+        if (drop.isClosed) return 1;   // Closed in middle
+        return 0;                       // Open at top
+      };
+      const priorityDiff = getPriority(a) - getPriority(b);
+      if (priorityDiff !== 0) return priorityDiff;
+      // Within same priority, sort by dropOpens date
+      return a.dropOpens.getTime() - b.dropOpens.getTime();
+    });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-amber-50 py-12 px-4 relative overflow-hidden">
