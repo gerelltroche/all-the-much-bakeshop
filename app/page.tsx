@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import LinkTreePage from './link-tree/page';
 
 export default function Home() {
-  redirect('/link-tree');
+  return <LinkTreePage />;
 }

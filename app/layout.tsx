@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "./components/MetaPixel";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 
 // JSON-LD structured data for LocalBusiness
 const jsonLd = {
@@ -153,6 +154,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased bg-gradient-to-b from-rose-50 to-amber-50`}
       >
         <MetaPixel />
+        <GoogleAnalytics />
         {/* Background decorative polka dots */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           {/* Larger polka dots */}
